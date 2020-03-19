@@ -1,6 +1,10 @@
 package comp1110.ass2;
 
 public class Metro {
+
+    private int numberOfPlayers;
+    private String boardStatement;
+    private Player turnOfPlayer;
     /**
      * Task 2
      * Determine whether a piece placement is well-formed. For a piece
@@ -97,5 +101,24 @@ public class Metro {
     public static String generateMove(String placementSequence, String piece, String hand, int numberOfPlayers) {
         // FIXME Task 9: generate a valid move
         return "";
+    }
+
+    /* Update the given placement sequence string.
+     *
+     * @param placementSequence a String representing the sequence of piece placements made so far in the game
+     * @param tilePlacement             a six-character String representing the piece to be placed
+     * @return A new String shows updated placement sequence.
+     */
+    public static String updatePlacementSequence(String placementSequence, String tilePlacement){
+        return "";
+    }
+
+    /* Check if the board is full, if it is, game is over.
+     *
+     * @param placementSequence a String representing the sequence of piece placements made so far in the game
+     * @return A boolean shows the game is over or not.
+     */
+    public static boolean checkGameOver(String placementSequence){
+        return false;
     }
 }
