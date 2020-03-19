@@ -2,9 +2,9 @@ package comp1110.ass2;
 
 public class Metro {
 
-    private int numberOfPlayers;
-    private String boardStatement;
-    private Player turnOfPlayer;
+    private int numberOfPlayers;        //number of players in a particular game
+    private String placementSequence;       //the string representing game board situation
+    private Player turnOfPlayer;        //Player whose turn it is currently
     /**
      * Task 2
      * Determine whether a piece placement is well-formed. For a piece
