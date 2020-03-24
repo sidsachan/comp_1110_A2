@@ -20,7 +20,22 @@ public class Metro {
      */
     public static boolean isPiecePlacementWellFormed(String piecePlacement) {
         // FIXME Task 2: determine whether a piece placement is well-formed
-        return false;
+        //checking length
+        if (piecePlacement.length()!=6)
+            return false;
+        //first four characters between 'a'(97 ASCII) and 'd' (100 ASCII)
+        for (int i=0;i<4;i++) {
+            int x  = piecePlacement.charAt(i);
+            if (!(x>= 97 && x<= 100))
+                return false;
+        }
+        //fifth and sixth character between '0'(48 ASCII) and '7'(55 ASCII)
+        for (int i=4;i<6;i++) {
+            int x = piecePlacement.charAt(i);
+            if (!(x>= 48 && x<= 55))
+                return false;
+        }
+        return true;
     }
 
     /**
