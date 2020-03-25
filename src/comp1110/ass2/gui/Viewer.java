@@ -91,7 +91,7 @@ public class Viewer extends Application {
         for (int i=dim+1;i<=dim*2;++i){
             ImageView im = new ImageView();
             im.setImage(new Image(this.getClass().getResource(URI_BASE + "station" + i +".jpg").toString()));
-            im.setRotate(270);
+            im.setRotate(90);
             im.setFitHeight(SQUARE_SIZE);
             im.setFitWidth(SQUARE_SIZE);
             im.setLayoutX(0);
@@ -118,7 +118,7 @@ public class Viewer extends Application {
         for (int i=dim*3+1;i<=dim*4;++i){
             ImageView im = new ImageView();
             im.setImage(new Image(this.getClass().getResource(URI_BASE + "station" + i +".jpg").toString()));
-            im.setRotate(90);
+            im.setRotate(270);
             im.setFitHeight(SQUARE_SIZE);
             im.setFitWidth(SQUARE_SIZE);
             im.setLayoutX(0);
