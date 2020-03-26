@@ -1,5 +1,7 @@
 package comp1110.ass2;
 
+import java.util.Random;
+
 public class Metro {
 
     private int numberOfPlayers;        //number of players in a particular game
@@ -230,6 +232,31 @@ public class Metro {
      */
     public static String drawFromDeck(String placementSequence) {
         // FIXME Task 5: draw a random tile from the deck
+        Tile[] remaining = Tile.getStartingTiles();
+        Tile[] occurrence = sortedOccurrence(placementSequence);
+        int count = 0;          //for creating a random number for selection
+        Random rand = new Random();
+        for (int i = 0; i< occurrence.length;++i) {
+            int difference = remaining[i].getNumber()-occurrence[i].getNumber();
+            remaining[i].setNumber(difference);
+            count = count + difference;
+        }
+
+        if (count==0)
+            return "";
+        int r = rand.nextInt(count) + 1;
+        //i am doing this with more calculations/processing using less memory
+        //alternate way is to create a string array of the remaining tile when we are
+        //counting the remaining ones.
+        count=0;
+        for (int i =0; i<remaining.length;++i){
+            for (int j = 0 ; j< remaining[i].getNumber();j++){
+                count++;
+                if (count==r){
+                    return remaining[i].getType();
+                }
+            }
+        }
         return "";
     }
 
@@ -299,5 +326,41 @@ public class Metro {
      */
     public static boolean checkGameOver(String placementSequence){
         return false;
+    }
+    /**
+     * Return sorted occurrence of tiles in the placement sequence
+     *
+     * @param placementSequence a String representing the sequence of tiles
+     *                          that have already been played
+     * @return a tile array containing sorted occurrence of each tile type
+     */
+    public static Tile[] sortedOccurrence(String placementSequence){
+        Tile[] sorted = Tile.getStartingTiles();
+        //making all occurrences zero
+        for (int i = 0; i<sorted.length; ++i) {
+            sorted[i].setNumber(0);
+        }
+        //finding the corresponding type for each piece in the placementSequence
+        int l = placementSequence.length();
+        for (int i=0;i<l;i=i+6){
+            String s = placementSequence.substring(i,i+4);
+            int low = 0;
+            int high = sorted.length;
+            while (high>=low){
+                int mid = (high+low)/2;
+                //if the two string are equal the add one to the number
+                if (s.hashCode()==sorted[mid].getType().hashCode()) {
+                    sorted[mid].setNumber(sorted[mid].getNumber() + 1);
+                    break;
+                }
+                //if the substring occurs later in the sorted array, then new low is the current mid
+                else if (s.hashCode()>sorted[mid].getType().hashCode())
+                    low = mid;
+                //if the substring occurs earlier in the sorted array, then new high is the current mid
+                else if (s.hashCode()<sorted[mid].getType().hashCode())
+                    high = mid;
+            }
+        }
+        return sorted;
     }
 }
