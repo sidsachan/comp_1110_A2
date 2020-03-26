@@ -6,82 +6,40 @@ package comp1110.ass2;
  * TileState : state of the tile
  */
 public class Tile {
-    private TileType type;
-    private TileState state;
+    private String type;
+    private int number;
 
-    public Tile(TileType type, TileState state) {
+    public Tile(String type, int number) {
         this.type = type;
-        this.state = state;
+        this.number = number;
     }
 
-    public static Tile[] tiles = {
-            new Tile(TileType.aacb,TileState.D),
-            new Tile(TileType.aacb,TileState.D),
-            new Tile(TileType.aacb,TileState.D),
-            new Tile(TileType.aacb,TileState.D),
-            new Tile(TileType.cbaa,TileState.D),
-            new Tile(TileType.cbaa,TileState.D),
-            new Tile(TileType.cbaa,TileState.D),
-            new Tile(TileType.cbaa,TileState.D),
-            new Tile(TileType.acba,TileState.D),
-            new Tile(TileType.acba,TileState.D),
-            new Tile(TileType.acba,TileState.D),
-            new Tile(TileType.acba,TileState.D),
-            new Tile(TileType.baac,TileState.D),
-            new Tile(TileType.baac,TileState.D),
-            new Tile(TileType.baac,TileState.D),
-            new Tile(TileType.baac,TileState.D),
-            new Tile(TileType.aaaa,TileState.D),
-            new Tile(TileType.aaaa,TileState.D),
-            new Tile(TileType.aaaa,TileState.D),
-            new Tile(TileType.aaaa,TileState.D),
-            new Tile(TileType.cbcb,TileState.D),
-            new Tile(TileType.cbcb,TileState.D),
-            new Tile(TileType.cbcb,TileState.D),
-            new Tile(TileType.bcbc,TileState.D),
-            new Tile(TileType.bcbc,TileState.D),
-            new Tile(TileType.bcbc,TileState.D),
-            new Tile(TileType.cccc,TileState.D),
-            new Tile(TileType.cccc,TileState.D),
-            new Tile(TileType.bbbb,TileState.D),
-            new Tile(TileType.bbbb,TileState.D),
-            new Tile(TileType.dacc,TileState.D),
-            new Tile(TileType.dacc,TileState.D),
-            new Tile(TileType.cdac,TileState.D),
-            new Tile(TileType.cdac,TileState.D),
-            new Tile(TileType.ccda,TileState.D),
-            new Tile(TileType.ccda,TileState.D),
-            new Tile(TileType.accd,TileState.D),
-            new Tile(TileType.accd,TileState.D),
-            new Tile(TileType.dbba,TileState.D),
-            new Tile(TileType.dbba,TileState.D),
-            new Tile(TileType.adbb,TileState.D),
-            new Tile(TileType.adbb,TileState.D),
-            new Tile(TileType.badb,TileState.D),
-            new Tile(TileType.badb,TileState.D),
-            new Tile(TileType.bbad,TileState.D),
-            new Tile(TileType.bbad,TileState.D),
-            new Tile(TileType.ddbc,TileState.D),
-            new Tile(TileType.ddbc,TileState.D),
-            new Tile(TileType.cddb,TileState.D),
-            new Tile(TileType.cddb,TileState.D),
-            new Tile(TileType.bcdd,TileState.D),
-            new Tile(TileType.bcdd,TileState.D),
-            new Tile(TileType.dbcd,TileState.D),
-            new Tile(TileType.dbcd,TileState.D),
-            new Tile(TileType.adad,TileState.D),
-            new Tile(TileType.adad,TileState.D),
-            new Tile(TileType.dada,TileState.D),
-            new Tile(TileType.dada,TileState.D),
-            new Tile(TileType.dddd,TileState.D),
-            new Tile(TileType.dddd,TileState.D),
+    public static Tile[] remainingTiles = {
+            new Tile("aacb",4),
+            new Tile("cbaa",4),
+            new Tile("acba",4),
+            new Tile("baac",4),
+            new Tile("aaaa",4),
+            new Tile("cbcb",3),
+            new Tile("bcbc",3),
+            new Tile("cccc",2),
+            new Tile("bbbb",2),
+            new Tile("dacc",2),
+            new Tile("cdac",2),
+            new Tile("ccda",2),
+            new Tile("accd",2),
+            new Tile("dbba",2),
+            new Tile("adbb",2),
+            new Tile("badb",2),
+            new Tile("bbad",2),
+            new Tile("ddbc",2),
+            new Tile("cddb",2),
+            new Tile("bcdd",2),
+            new Tile("dbcd",2),
+            new Tile("adad",2),
+            new Tile("dada",2),
+            new Tile("dddd",2),
     };
 
 
-    /**
-     * Update the tile state
-     * @param newState A String representing the piece to be placed
-     */
-    public void updateTileState(TileState newState){
-    }
 }
