@@ -43,9 +43,11 @@ public class Metro {
      *
      * @param placementSequence a String representing the sequence of tiles
      *                          that have already been played
+     * @param totalHands        a String representing all tiles (if any) in
+     *                          all players' hands
      * @return a random tile from the deck
      */
-    public static String drawFromDeck(String placementSequence) {
+    public static String drawFromDeck(String placementSequence, String totalHands) {
         // FIXME Task 5: draw a random tile from the deck
         return "";
     }
@@ -54,13 +56,15 @@ public class Metro {
      * Task 6
      * Determine if a given placement sequence follows the rules of the game.
      * These rules are:
-     * - All tracks on all placed pieces must eventually arrive at a station.
-     * - No piece can overlap another piece, or any of the central stations.
-     * - If a piece is on an edge of the board, it cannot contain a track that
-     * results in a station looping back to itself, UNLESS it is unavoidable.
-     * - If a piece is on a corner of the board, it cannot contain a track that
-     * links the two stations adjacent to that corner, UNLESS it is
-     * unavoidable.
+     * - No tile can overlap another tile, or any of the central stations.
+     * - A tile cannot be placed next to one of the central squares unless it
+     * continues or completes an existing track.
+     * - If a tile is on an edge of the board, it cannot contain a track that
+     * results in a station looping back to itself, UNLESS that tile could not
+     * have been placed elsewhere.
+     * - If a tile is on a corner of the board, it cannot contain a track that
+     * links the two stations adjacent to that corner, UNLESS that tile could
+     * not have been placed elsewhere.
      *
      * @param placementSequence A sequence of placements on the board.
      * @return Whether this placement string is valid.
