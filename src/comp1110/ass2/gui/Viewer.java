@@ -45,6 +45,12 @@ public class Viewer extends Application {
             return;
 
         Group tiles = new Group();
+
+        root.getChildren().add(tiles);
+        //for clearing previously drawn tiles
+        if(root.getChildren().indexOf(tiles)==3)
+            root.getChildren().remove(2);
+
         int number = placement.length()/6;
 
         for (int i = 0; i<number; ++i){
@@ -63,8 +69,6 @@ public class Viewer extends Application {
             tile.setLayoutY((y+1)*SQUARE_SIZE);
             tiles.getChildren().add(tile);
         }
-
-        root.getChildren().add(tiles);
     }
 
     /**
@@ -204,7 +208,6 @@ public class Viewer extends Application {
     public void start(Stage primaryStage) throws Exception {
         primaryStage.setTitle("FocusGame Viewer");
         Scene scene = new Scene(root, VIEWER_WIDTH, VIEWER_HEIGHT);
-
         root.getChildren().add(controls);
         showStations();
         makeControls();
