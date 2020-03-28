@@ -238,10 +238,23 @@ public class Metro {
         Tile[] occurrence = sortedOccurrence(placementSequence);
         int count = 0;          //for creating a random number for selection
         Random rand = new Random();
+
         for (int i = 0; i< occurrence.length;++i) {
             int difference = remaining[i].getNumber()-occurrence[i].getNumber();
             remaining[i].setNumber(difference);
             count = count + difference;
+        }
+
+        //getting rid of in hands tiles. doing normal search O(m*n)
+        for (int i = 0; i<totalHands.length(); i=i+4){
+            for (int j = 0; j<remaining.length;++j){
+                if (totalHands.substring(i,i+4).equals(remaining[j].getType())){
+                    int temp = remaining[j].getNumber()-1;
+                    remaining[j].setNumber(temp);
+                    count = count - 1;
+                    break;
+                }
+            }
         }
 
         if (count==0)
