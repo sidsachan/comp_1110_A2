@@ -21,6 +21,30 @@ public class Utilities {
             "bcbc20aacb70dbba21dbcd37cccc74badb11cddb30"
     };
 
+    public static final String[] CORRESPONDING_HANDS = {
+            "adbbcdac",
+            "acbaacbaacba",
+            "bbbbddddccccacba",
+            "bcbcdbbaccccbcbccddb"
+    };
+
+    public static final ArrayList<ArrayList<String>> VALID_SMALL_BOARDSTRING_DRAWS = new ArrayList<>(
+            Arrays.asList(
+                    new ArrayList<>(Arrays.asList("cccc", "bbbb", "dddd", "cbcb", "bcbc", "aacb", "baac", "cbaa",
+                            "acba", "aaaa", "dacc", "ccda", "accd", "dbba", "badb", "bbad", "ddbc", "cddb", "bcdd",
+                            "dbcd", "adad", "dada")),
+                    new ArrayList<>(Arrays.asList("cccc", "bbbb", "dddd", "cbcb", "bcbc", "aacb", "baac", "cbaa",
+                            "aaaa", "dacc", "cdac", "ccda", "accd", "dbba", "adbb", "badb", "bbad", "ddbc", "cddb",
+                            "bcdd", "dbcd", "adad", "dada")),
+                    new ArrayList<>(Arrays.asList("cbcb", "bcbc", "aacb", "baac", "cbaa", "acba", "aaaa", "dacc",
+                            "cdac", "ccda", "accd", "dbba", "adbb", "badb", "bbad", "ddbc", "cddb", "bcdd", "dbcd",
+                            "adad", "dada")),
+                    new ArrayList<>(Arrays.asList("bbbb", "dddd", "cbcb", "aacb", "baac", "cbaa", "acba", "aaaa",
+                            "dacc", "cdac", "ccda", "accd", "adbb", "badb", "bbad", "ddbc", "bcdd", "dbcd", "adad",
+                            "dada"))
+            )
+    );
+
     public static final String[] INVALID_MEDIUM_BOARDSTRINGS = {
             // Have a piece(s) not connected to the rest of the board
             "aacb05dada30bcbc02dacc46cddb06baac72bbad75accd62badb57ccda01adad31",
@@ -47,7 +71,7 @@ public class Utilities {
             "adbb01acba50cbaa70dbba75cbcb47aaaa51acba72aaaa06bcdd03dacc67cbaa20adad66accd56bbbb65badb04dddd41aacb37dacc10badb61dbcd11baac05cddb42dddd32cbcb02dbba15ccda16accd14cbaa46cddb64cccc74aacb25aaaa36ddbc52bbad22acba73baac17dbcd71aaaa13baac63cbaa12bcbc40bcbc53cccc21adbb31cdac54cbcb57dada23acba30bcbc35aacb55bcdd62ccda27adad45bbbb26bbad24dada60cdac76ddbc00baac77aacb07",
             "aaaa04badb47accd27cbcb57cbaa14dacc50dddd56baac13cbaa67aaaa20dddd55aaaa26dbcd45adad24bcdd25dbba71baac06cddb05cbcb30ccda61bcbc16cbcb65cddb12ccda54dada40dbba11baac77badb36dada22dacc60baac72ddbc53bbbb66acba62cccc41cdac15ddbc76aacb63aacb46acba17aaaa52accd31bcdd35adad21cdac74bbad75aacb23bcbc37acba64adbb32acba00cbaa01adbb02cbaa73bbbb42bbad51aacb10bcbc03dbcd07cccc70",
             "baac74aaaa27dacc71dddd61dbcd37aaaa05adad02bcbc62cccc51cbcb75baac15bbad01acba41dada63bcdd16acba76cbaa65aaaa73ccda57dbcd66cbcb56adad11bbad26acba47aacb72cbaa12dbba64aaaa00accd55dada30accd31aacb22cdac40bbbb50dacc60cddb53bcbc45cddb25dddd35baac67cccc13acba17ccda52cdac36adbb46bcdd54bcbc04ddbc10aacb24ddbc14dbba23baac77badb42adbb21cbcb03aacb07badb06cbaa32bbbb20cbaa70",
-            "bcdd01dada47bbbb02aacb46badb10dddd11dbba76cdac66cccc75acba21cbcb20ddbc12aacb06cddb65acba77acba17badb27bbbb40acba00baac26accd22adad45aaaa36dddd31cccc71cbaa72ddbc16dbcd23dbcd37ccda24bbad13cbaa60ccda62cbaa73aaaa25adad52dacc53bcbc54adbb35aaaa42cdac64accd15cbcb57cbcb63cbaa04baac56bbad03cddb05dada14bcbc50aacb32bcbc51dacc30aacb41aaaa07adbb74bcdd55baac61baac70dbba67",
+            "bcdd01dada47bbbb02aacb46badb10dddd11dbba76cdac66cccc75acba21cbcb20ddbc12aacb06cddb65acba77acba17badb27bbbb40acba00baac26accd22adad45aaaa36dddd31cccc71cbaa72ddbc16dbcd23dbcd37ccda24bbad13cbaa60ccda62cbaa73aaaa25adad52dacc53bcbc54adbb35aaaa42cdac64accd15cbcb57cbcb63cbaa04baac56bbad03cddb05dada14bcbc50aacb32bcbc51dacc30aacb41aaaa07adbb74bcdd55baac61dbba67baac70",
             "adad03cbaa71acba06badb27dddd61dddd13aacb12accd05bcbc62bbbb10baac51acba75ccda01bcbc37dbba16dbba36bcdd15aaaa72aacb41adad02cdac74accd46dacc52baac67cccc47dada40cbcb11aaaa73cbaa26cddb30aacb63adbb21dbcd45bbad04acba76dada50aaaa57baac20cbaa66ccda60dbcd53bbbb17bbad23badb65cddb64cbaa31bcbc14baac55ddbc24bcdd54cbcb35cdac25ddbc22cccc42cbcb70aacb56acba77aaaa00adbb32dacc07",
             "cccc72acba37aacb71baac17dada27aacb16adad26aacb74ddbc61dada60bbbb25dacc73dddd24cbaa04dbcd36dbcd35adbb30baac02cdac50baac67bbbb75cbaa70ccda51adad12cbcb06adbb76accd14aaaa40aaaa11cccc64cbaa54dddd65dacc13baac00acba57bcdd31bcbc15bcbc55acba20aaaa23ccda05cdac41bcdd32badb66bbad45badb52accd01cddb53bcbc63dbba42cbaa22acba56cddb62dbba47aaaa07cbcb21cbcb46aacb10ddbc77bbad03",
             "cbaa74baac40adbb20cbaa37cbcb60bbbb47ddbc61acba17dddd46ccda30cdac21dddd31bcbc51dbcd22aaaa64aacb56acba75cccc02accd65dbcd36cbaa32adad04baac06dada57bcbc01ddbc10cddb11cccc16dbba45ccda26bbad27aacb72dacc62aaaa15bcbc52aaaa07badb05aacb55cbcb42cddb41bcdd35accd23adad14dada13bbbb76bbad25cbaa63aaaa70dbba67cbcb50aacb71baac66cdac53bcdd03dacc24acba00adbb12acba73baac54badb77",
@@ -117,7 +141,7 @@ public class Utilities {
                             "baac", "cbaa", "acba", "aaaa", "dacc", "cdac", "ccda", "accd", "dbba")),
                     new ArrayList<>(Arrays.asList("dddd", "cbcb", "bcbc", "aacb", "baac", "cbaa", "acba", "aaaa", "dacc", "cdac",
                             "ccda", "accd", "dbba", "adbb", "badb", "bbad", "ddbc", "cddb", "bcdd"))
-    ));
+            ));
 
     public static final ArrayList<String> ALL_UNIQUE_PIECES = new ArrayList<>(
             Arrays.asList("cccc", "bbbb", "dddd", "cbcb", "bcbc", "aacb", "baac", "cbaa", "acba", "aaaa", "dacc",
@@ -151,11 +175,11 @@ public class Utilities {
     };
 
     public static final int[][] MULTIPLE_CONNECTING_SCORES = {
-            {2,6},
-            {9,2},
-            {4,10},
-            {13,3},
-            {12,25}
+            {2, 6},
+            {9, 2},
+            {4, 10},
+            {13, 3},
+            {12, 25}
     };
 
     public static final String[] MISCELLANEOUS_MOVES = {
