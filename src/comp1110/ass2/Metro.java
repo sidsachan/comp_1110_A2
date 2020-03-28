@@ -56,167 +56,19 @@ public class Metro {
     public static boolean isPlacementSequenceWellFormed(String placement) {
         // FIXME Task 3: determine whether a placement sequence is well-formed
         //check length
-        if(placement.length()%6!=0||placement.length()>360){
+        int l = placement.length();
+        if(l%6!=0||l>360){
             return false;
         }
-        //check every piece placement
-        int cccc=0,bbbb=0,dacc=0,cdac=0,ccda=0,accd=0,dbba=0,adbb=0,badb=0,bbad=0,ddbc=0,cddb=0,bcdd=0,dbcd=0,adad=0,dada=0,dddd=0,cbcb=0,bcbc=0,aacb=0,cbaa=0,acba=0,baac=0,aaaa = 0;
-        for(int i=0;i<placement.length();i+=6){
-            String piecePlacement = placement.substring(i,i+6);
-            String pieceType = piecePlacement.substring(0,4);
-            //check is piece placement well formed
-            if(!isPiecePlacementWellFormed(piecePlacement)){
+        //check tile type valid
+        if(!checkTileType(placement))
+            return false;
+
+        Tile[] sorted = sortedOccurrence(placement);
+        Tile[] allTiles = Tile.getStartingTiles();
+        for(int i=0;i<24;i++){
+            if(sorted[i].getNumber()>allTiles[i].getNumber()){
                 return false;
-            }else {
-                //check if there is extra tiles
-                switch (pieceType){
-                    case "cccc":
-                        cccc+=1;
-                        if(cccc>2){
-                            return false;
-                        }
-                        break;
-                    case "bbbb":
-                        bbbb+=1;
-                        if(bbbb>2){
-                            return false;
-                        }
-                        break;
-                    case "dacc":
-                        dacc+=1;
-                        if(dacc>2){
-                            return false;
-                        }
-                        break;
-                    case "cdac":
-                        cdac+=1;
-                        if(cdac>2){
-                            return false;
-                        }
-                        break;
-                    case "ccda":
-                        ccda+=1;
-                        if(ccda>2){
-                            return false;
-                        }
-                        break;
-                    case "accd":
-                        accd+=1;
-                        if(accd>2){
-                            return false;
-                        }
-                        break;
-                    case "dbba":
-                        dbba+=1;
-                        if(dbba>2){
-                            return false;
-                        }
-                        break;
-                    case "adbb":
-                        adbb+=1;
-                        if(adbb>2){
-                            return false;
-                        }
-                        break;
-                    case "badb":
-                        badb+=1;
-                        if(badb>2){
-                            return false;
-                        }
-                        break;
-                    case "bbad":
-                        bbad+=1;
-                        if(bbad>2){
-                            return false;
-                        }
-                        break;
-                    case "ddbc":
-                        ddbc+=1;
-                        if(ddbc>2){
-                            return false;
-                        }
-                        break;
-                    case "cddb":
-                        cddb+=1;
-                        if(cddb>2){
-                            return false;
-                        }
-                        break;
-                    case "bcdd":
-                        bcdd+=1;
-                        if(bcdd>2){
-                            return false;
-                        }
-                        break;
-                    case "dbcd":
-                        dbcd+=1;
-                        if(dbcd>2){
-                            return false;
-                        }
-                        break;
-                    case "adad":
-                        adad+=1;
-                        if(adad>2){
-                            return false;
-                        }
-                        break;
-                    case "dada":
-                        dada+=1;
-                        if(dada>2){
-                            return false;
-                        }
-                        break;
-                    case "dddd":
-                        dddd+=1;
-                        if(dddd>2){
-                            return false;
-                        }
-                        break;
-                    case "cbcb":
-                        cbcb+=1;
-                        if(cbcb>3){
-                            return false;
-                        }
-                        break;
-                    case "bcbc":
-                        bcbc+=1;
-                        if(bcbc>3){
-                            return false;
-                        }
-                        break;
-                    case "aacb":
-                        aacb+=1;
-                        if(aacb>4){
-                            return false;
-                        }
-                        break;
-                    case "cbaa":
-                        cbaa+=1;
-                        if(cbaa>4){
-                            return false;
-                        }
-                        break;
-                    case "acba":
-                        acba+=1;
-                        if(acba>4){
-                            return false;
-                        }
-                        break;
-                    case "baac":
-                        baac+=1;
-                        if(baac>4){
-                            return false;
-                        }
-                        break;
-                    case "aaaa":
-                        aaaa+=1;
-                        if(aaaa>4){
-                            return false;
-                        }
-                        break;
-                    default:
-                        return false;
-                }
             }
         }
         return true;
@@ -382,6 +234,30 @@ public class Metro {
         return sorted;
     }
 
+    /**
+     * Return boolean represent if tiles' type in the placement sequence are valid
+     *
+     * @param placementSequence a String representing the sequence of tiles
+     *                          that have already been played
+     * @return boolean represent if tiles' type in the placement sequence are valid
+     */
+
+    public static boolean checkTileType(String placementSequence){
+        Tile[] allTiles = Tile.getStartingTiles();
+        boolean result = false;
+        boolean check = true;
+        for(int i=0;i<placementSequence.length();i+=6){
+            String type = placementSequence.substring(i,i+4);
+            for(int j=0;j<24;j++){
+                if(type.equals(allTiles[j].getType())){
+                    result = true;
+                }
+            }
+            if(!result)
+                check=false;
+        }
+        return check;
+    }
     /**
      * A function to get a shuffled deck at the begining of the game
      *
