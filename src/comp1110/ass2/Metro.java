@@ -344,6 +344,7 @@ public class Metro {
     public static boolean checkGameOver(String placementSequence){
         return false;
     }
+
     /**
      * Return sorted occurrence of tiles in the placement sequence
      *
@@ -379,5 +380,15 @@ public class Metro {
             }
         }
         return sorted;
+    }
+
+    /**
+     * A function to get a shuffled deck at the begining of the game
+     *
+     * @return a tile array containing randomised tiles, a shuffled deck for playing
+     */
+    public static Tile[] getFreshDeck(){
+        Tile [] start = Tile.getStartingTiles();
+        return start;
     }
 }
