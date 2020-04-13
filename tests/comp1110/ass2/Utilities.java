@@ -51,7 +51,7 @@ public class Utilities {
             "adbb74cbcb17dbcd37cdac60accd36aaaa07cccc06baac55aacb70ccda63acba72adad46dbba35",
 
             // Loops back to a station
-            "badb73dacc76aacb05bbad15cddb10dbcd17accd37bbbb67bcdd04adbb72ccda66cbcb40dada65cccc73aaaa71",
+            "badb73dacc76aacb05bbad15cddb10dbcd17accd37bbbb67bcdd04adbb72ccda66cbcb40dada65cccc70aaaa71",
             "bbbb74cbaa37baac07dada76aaaa06bcdd26cdac64dddd63ccda02ddbc73dacc53aaaa57",
 
             // overlaps other piece and/or a central station
@@ -194,7 +194,7 @@ public class Utilities {
                     "cdac72", "cdac73", "cdac74")),
 
             new ArrayList<>(Arrays.asList("dbcd11", "dbcd12", "dbcd14", "dbcd17", "dbcd23", "dbcd26", "dbcd32",
-                    "dbcd37", "dbcd42", "dbcd47", "dbcd56", "dbcd57", "dbcd62", "dbcd64", "dbcd65", "dbcd72",
+                    "dbcd37", "dbcd41", "dbcd47", "dbcd56", "dbcd57", "dbcd61", "dbcd64", "dbcd65", "dbcd72",
                     "dbcd73")),
 
             new ArrayList<>(Arrays.asList("bcbc00", "bcbc01", "bcbc02", "bcbc03", "bcbc04", "bcbc06", "bcbc10",
