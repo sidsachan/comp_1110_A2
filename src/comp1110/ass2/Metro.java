@@ -146,7 +146,23 @@ public class Metro {
      */
     public static boolean isPlacementSequenceValid(String placementSequence) {
         // FIXME Task 6: determine whether a placement sequence is valid
-        return false;
+        //overlap and central station check
+        //make a 8x8 matrix and store 0 (default upon initialization) and 1 (if present in the placement sequence)
+        int [][] tilePresent = new int[8][8];
+        for(int i=4; i<placementSequence.length();i=i+6){
+            int row = (int)placementSequence.charAt(i) - 48;
+            int col = (int)placementSequence.charAt(i+1) - 48;
+
+            if (tilePresent[row][col]==0)
+                tilePresent[row][col]=1;
+            else
+                return false;           //overlap check
+
+            if ((row==3 || row==4) && (col==3 || col==4))       //central station positions check
+                return false;
+        }
+
+        return true;
     }
 
     /**
