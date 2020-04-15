@@ -8,13 +8,15 @@ Use the entries below as an example.
 Everyone: create application skeleton - meeting 12:00 19 Mar
 
 ##Teaching Pause
-Meeting time: March 24, 5 pm.
+Meeting time: March 26, 5 pm.
+Siddharth finished task 3 and 5.
+Hengrui finished task 4.
 
 ## Week 5
 
 ## Mid-Semester Break
 Meeting time: April 15, 10 am.
-Henry is working on task 6.
+Hengrui is working on task 6.
 Siddharth doing task 7.
 
 ## Week 6
