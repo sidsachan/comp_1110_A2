@@ -175,7 +175,9 @@ public class Metro {
      */
     public static int[] getScore(String placementSequence, int numberOfPlayers) {
         // FIXME Task 7: determine the current score for the game
-        return new int[0];
+        int[] score = new int[numberOfPlayers];
+
+        return score;
     }
 
     /**
@@ -273,6 +275,60 @@ public class Metro {
                 check=false;
         }
         return check;
+    }
+
+
+    /**
+     * A function to represent the station arrangement depending on number of players
+     * @param numberOfPlayers
+     * @return a 2D array containing stations owned by respective players
+     */
+    public static int[][] stationArrangement(int numberOfPlayers) {
+        int[][] stationDistribution = new int[numberOfPlayers][32 / numberOfPlayers];
+        switch (numberOfPlayers) {
+            case 2:
+                stationDistribution = new int[][]{
+                        {1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31},
+                        {2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32}
+                };
+                break;
+            case 3:
+                stationDistribution = new int[][]{
+                        {1, 4, 6, 11, 15, 20, 23, 25, 28, 31},
+                        {2, 7, 9, 12, 14, 19, 22, 27, 29, 32},
+                        {3, 5, 8, 10, 13, 18, 21, 24, 26, 30}
+                };
+                break;
+            case 4:
+                stationDistribution = new int[][]{
+                        {4, 7, 11, 16, 20, 23, 27, 32},
+                        {3, 8, 12, 15, 19, 24, 28, 31},
+                        {1, 6, 10, 13, 18, 21, 25, 30},
+                        {2, 5, 9, 14, 17, 22, 26, 29}
+                };
+                break;
+            case 5:
+                stationDistribution = new int[][]{
+                        {1, 5, 10, 14, 22, 28},
+                        {6, 12, 18, 23, 27, 32},
+                        {3, 7, 15, 19, 25, 29},
+                        {2, 9, 13, 21, 26, 30},
+                        {4, 8, 11, 20, 24, 31}
+                };
+                break;
+            case 6:
+                stationDistribution = new int[][]{
+                        {1, 5, 10, 19, 27},
+                        {2, 11, 18, 25, 29},
+                        {4, 8, 14, 21, 26},
+                        {6, 15, 20, 24, 31},
+                        {3, 9, 13, 23, 30},
+                        {7, 12, 22, 28, 32}
+
+                };
+                break;
+        }
+        return stationDistribution;
     }
     /**
      * A function to get a shuffled deck at the begining of the game
