@@ -7,19 +7,17 @@ Use the entries below as an example.
 
 Everyone: create application skeleton - meeting 12:00 19 Mar
 
+##Teaching Pause
+Meeting time: March 24, 5 pm.
+
 ## Week 5
 
-Zhang San: Task 3 isPiecePlacementWellFormed - 26 Mar
-
-Jane Bloggs: Task 4 getNeighbours - 27 Mar
-
-Erika Mustermann: Task 6 getViablePiecePlacements - 28 Mar (depends on Task 3)
+## Mid-Semester Break
+Meeting time: April 15, 10 am.
+Henry is working on task 6.
+Siddharth doing task 7.
 
 ## Week 6
-
-...
-
-## Mid-Semester Break
 
 ## Week 7
 
