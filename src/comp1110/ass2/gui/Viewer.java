@@ -24,7 +24,7 @@ import javafx.stage.Stage;
 public class Viewer extends Application {
     /* board layout */
     private static final int SQUARE_SIZE = 70;
-    private static final int VIEWER_WIDTH = 700;
+    private static final int VIEWER_WIDTH = 1024;
     private static final int VIEWER_HEIGHT = 768;
     private static final int dim = 8;           //board is 8 by 8
 
@@ -131,9 +131,9 @@ public class Viewer extends Application {
         }
         right.setLayoutX(SQUARE_SIZE + dim*SQUARE_SIZE);
         right.setLayoutY(SQUARE_SIZE);
-        //corner represents the corner of the board
+        //corner represents the corner of the board, may be add something in future
         Group corner = new Group();
-        //center represents center stations
+        //center represents center stations, first layout is set amongst them and then whole centre block is placed
         Group center = new Group();
         Image im = new Image(this.getClass().getResource(URI_BASE+"centre_station.jpg").toString());
         ImageView c1 = new ImageView(im);
@@ -206,7 +206,7 @@ public class Viewer extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        primaryStage.setTitle("FocusGame Viewer");
+        primaryStage.setTitle("Metro Game Viewer");
         Scene scene = new Scene(root, VIEWER_WIDTH, VIEWER_HEIGHT);
         root.getChildren().add(controls);
         showStations();
