@@ -174,6 +174,7 @@ public class Metro {
 
             if (row == 0 && a == 'd'){
                 if (b == 'd' && c == 'd' && d == 'd' && i == 4){
+                    continue;
                 }else{
                     if(!checkInnerBoard(tilePresent))
                         return false;//check not edge place
@@ -201,7 +202,8 @@ public class Metro {
                 }
             }
             if (row == 7 && c == 'd'){
-                if (b == 'd' && c == 'd' && d == 'd' && i == 4){
+                if (b == 'd' && a == 'd' && d == 'd' && i == 4){
+                    continue;
                 }else{
                     if(!checkInnerBoard(tilePresent))
                         return false;//check not edge place
@@ -229,7 +231,8 @@ public class Metro {
                 }
             }
             if (col == 0 && d == 'd'){
-                if (b == 'd' && c == 'd' && d == 'd' && i == 4){
+                if (b == 'd' && c == 'd' && a == 'd' && i == 4){
+                    continue;
                 }else{
                     if(!checkInnerBoard(tilePresent))
                         return false;//check not edge place
@@ -257,7 +260,8 @@ public class Metro {
                 }
             }
             if (col == 7 && b == 'd'){
-                if (b == 'd' && c == 'd' && d == 'd' && i == 4){
+                if (a == 'd' && c == 'd' && d == 'd' && i == 4){
+                    continue;
                 }else{
                     if(!checkInnerBoard(tilePresent))
                         return false;//check not edge place
@@ -727,7 +731,7 @@ public class Metro {
     /**
      * A function to check if inner board has empty space
      *
-     * @param tilePresent
+     * @param tilePresent array shows board space
      * @return a boolean shows if inner board has empty space
      */
     private static boolean checkInnerBoard(int[][] tilePresent){
