@@ -153,6 +153,10 @@ public class Metro {
         for (int i = 4; i < placementSequence.length(); i = i + 6) {
             int row = (int) placementSequence.charAt(i) - 48;
             int col = (int) placementSequence.charAt(i + 1) - 48;
+            char a = placementSequence.charAt(i - 4);
+            char b = placementSequence.charAt(i - 3);
+            char c = placementSequence.charAt(i - 2);
+            char d = placementSequence.charAt(i - 1);
 
             if (tilePresent[row][col] == 0)
                 tilePresent[row][col] = 1;
@@ -161,7 +165,257 @@ public class Metro {
 
             if ((row == 3 || row == 4) && (col == 3 || col == 4))       //central station positions check
                 return false;
+
+            if (((row == 2 || row == 5) && (col == 3 || col == 4)) || ((row == 3 || row == 4) && (col == 2 || col == 5)) ){
+                if(tilePresent[row-1][col] == 0 && tilePresent[row+1][col] == 0
+                        &&tilePresent[row][col+1] == 0 && tilePresent[row][col-1] == 0)
+                    return false;           //next to central station check
+            }
+
+            if (row == 0 && a == 'd'){
+                if (b == 'd' && c == 'd' && d == 'd' && i == 4){
+                }else{
+                    if(!checkInnerBoard(tilePresent))
+                        return false;//check not edge place
+                    for(int y=1;y<7;y++){
+                        if(tilePresent[7][y]!=1&&c!='d'){
+                            return false;
+                        }
+                    }
+                    for(int x=1;x<7;x++){
+                        if(tilePresent[x][0]!=1&&d!='d'){
+                            return false;
+                        }else if(tilePresent[x][7]!=1&&b!='d'){
+                            return false;
+                        }
+                    }           //check edge place
+                    boolean connerCheck=true;
+                    if(tilePresent[7][0]!=1&&d!='c'&&c!='b'&&c!='d'&&d!='d'){
+                        connerCheck = false;
+                    }
+                    if(tilePresent[7][7]!=1&&c!='c'&&b!='b'&&c!='d'&&b!='d'){
+                        connerCheck = false;
+                    }
+                    if(!connerCheck)
+                        return false;   //check conner place
+                }
+            }
+            if (row == 7 && c == 'd'){
+                if (b == 'd' && c == 'd' && d == 'd' && i == 4){
+                }else{
+                    if(!checkInnerBoard(tilePresent))
+                        return false;//check not edge place
+                    for(int y=1;y<7;y++){
+                        if(tilePresent[0][y]!=1&&a!='d'){
+                            return false;
+                        }
+                    }
+                    for(int x=1;x<7;x++){
+                        if(tilePresent[x][0]!=1&&d!='d'){
+                            return false;
+                        }else if(tilePresent[x][7]!=1&&b!='d'){
+                            return false;
+                        }
+                    }           //check edge place
+                    boolean connerCheck=true;
+                    if(tilePresent[0][0]!=1&&a!='c'&&d!='b'&&a!='d'&&d!='d'){
+                        connerCheck = false;
+                    }
+                    if(tilePresent[0][7]!=1&&b!='c'&&a!='b'&&a!='d'&&b!='d'){
+                        connerCheck = false;
+                    }
+                    if(!connerCheck)
+                        return false;
+                }
+            }
+            if (col == 0 && d == 'd'){
+                if (b == 'd' && c == 'd' && d == 'd' && i == 4){
+                }else{
+                    if(!checkInnerBoard(tilePresent))
+                        return false;//check not edge place
+                    for(int x=1;x<7;x++){
+                        if(tilePresent[x][7]!=1&&b!='d'){
+                            return false;
+                        }
+                    }
+                    for(int y=1;y<7;y++){
+                        if(tilePresent[0][y]!=1&&a!='d'){
+                            return false;
+                        }else if(tilePresent[7][y]!=1&&c!='d'){
+                            return false;
+                        }
+                    }           //check edge place
+                    boolean connerCheck=true;
+                    if(tilePresent[7][7]!=1&&c!='c'&&b!='b'&&b!='d'&&c!='d'){
+                        connerCheck = false;
+                    }
+                    if(tilePresent[0][7]!=1&&b!='c'&&a!='b'&&a!='d'&&b!='d'){
+                        connerCheck = false;
+                    }
+                    if(!connerCheck)
+                        return false;
+                }
+            }
+            if (col == 7 && b == 'd'){
+                if (b == 'd' && c == 'd' && d == 'd' && i == 4){
+                }else{
+                    if(!checkInnerBoard(tilePresent))
+                        return false;//check not edge place
+                    for(int x=1;x<7;x++){
+                        if(tilePresent[x][0]!=1&&d!='d'){
+                            return false;
+                        }
+                    }
+                    for(int y=1;y<7;y++){
+                        if(tilePresent[0][y]!=1&&a!='d'){
+                            return false;
+                        }else if(tilePresent[7][y]!=1&&c!='d'){
+                            return false;
+                        }
+                    }           //check edge place
+                    boolean connerCheck=true;
+                    if(tilePresent[0][0]!=1&&a!='c'&&d!='b'&&a!='d'&&d!='d'){
+                        connerCheck = false;
+                    }
+                    if(tilePresent[7][0]!=1&&d!='c'&&c!='b'&&c!='d'&&d!='d'){
+                        connerCheck = false;
+                    }
+                    if(!connerCheck)
+                        return false;
+                }
+            }                //edge of the board check
+
+            if (row == 0 && col == 0 &&(a=='c'||d=='b')){
+                if(!checkInnerBoard(tilePresent))
+                    return false;//check not edge place
+                for(int x=1;x<7;x++){
+                    if(tilePresent[x][7]!=1&&b!='d'){
+                        return false;
+                    }else if(tilePresent[x][0]!=1&&a!='d'){
+                        return false;
+                    }
+                }
+                for(int y=1;y<7;y++){
+                    if(tilePresent[0][y]!=1&&a!='d'){
+                        return false;
+                    }else if(tilePresent[7][y]!=1&&c!='d'){
+                        return false;
+                    }
+                }           //check edge place
+                boolean connerCheck=true;
+                if(tilePresent[7][7]!=1&&c!='c'&&b!='b'&&b!='d'&&c!='d'){
+                    connerCheck = false;
+                }
+                if(tilePresent[0][7]!=1&&b!='c'&&a!='b'&&a!='d'&&b!='d'){
+                    connerCheck = false;
+                }
+                if(tilePresent[7][0]!=1&&d!='c'&&c!='b'&&d!='d'&&c!='d'){
+                    connerCheck = false;
+                }
+
+                if(!connerCheck)
+                    return false;
+            }
+            if (row == 7 && col == 0 &&(d=='c'||c=='b')){
+                if(!checkInnerBoard(tilePresent))
+                    return false;//check not edge place
+                for(int x=1;x<7;x++){
+                    if(tilePresent[x][7]!=1&&b!='d'){
+                        return false;
+                    }else if(tilePresent[x][0]!=1&&a!='d'){
+                        return false;
+                    }
+                }
+                for(int y=1;y<7;y++){
+                    if(tilePresent[0][y]!=1&&a!='d'){
+                        return false;
+                    }else if(tilePresent[7][y]!=1&&c!='d'){
+                        return false;
+                    }
+                }           //check edge place
+                boolean connerCheck=true;
+                if(tilePresent[7][7]!=1&&c!='c'&&b!='b'&&b!='d'&&c!='d'){
+                    connerCheck = false;
+                }
+                if(tilePresent[0][7]!=1&&b!='c'&&a!='b'&&a!='d'&&b!='d'){
+                    connerCheck = false;
+                }
+                if(tilePresent[0][0]!=1&&a!='c'&&d!='b'&&a!='d'&&d!='d'){
+                    connerCheck = false;
+                }
+
+                if(!connerCheck)
+                    return false;
+            }
+            if (row == 0 && col == 7 &&(b=='c'||a=='b')){
+                if(!checkInnerBoard(tilePresent))
+                    return false;//check not edge place
+                for(int x=1;x<7;x++){
+                    if(tilePresent[x][7]!=1&&b!='d'){
+                        return false;
+                    }else if(tilePresent[x][0]!=1&&a!='d'){
+                        return false;
+                    }
+                }
+                for(int y=1;y<7;y++){
+                    if(tilePresent[0][y]!=1&&a!='d'){
+                        return false;
+                    }else if(tilePresent[7][y]!=1&&c!='d'){
+                        return false;
+                    }
+                }           //check edge place
+                boolean connerCheck=true;
+                if(tilePresent[7][7]!=1&&c!='c'&&b!='b'&&b!='d'&&c!='d'){
+                    connerCheck = false;
+                }
+                if(tilePresent[0][0]!=1&&a!='c'&&d!='b'&&a!='d'&&d!='d'){
+                    connerCheck = false;
+                }
+                if(tilePresent[7][0]!=1&&d!='c'&&c!='b'&&d!='d'&&c!='d'){
+                    connerCheck = false;
+                }
+
+                if(!connerCheck)
+                    return false;
+            }
+            if (row == 7 && col == 7 &&(c=='c'||b=='b')){
+                if(!checkInnerBoard(tilePresent))
+                    return false;//check not edge place
+                for(int x=1;x<7;x++){
+                    if(tilePresent[x][7]!=1&&b!='d'){
+                        return false;
+                    }else if(tilePresent[x][0]!=1&&a!='d'){
+                        return false;
+                    }
+                }
+                for(int y=1;y<7;y++){
+                    if(tilePresent[0][y]!=1&&a!='d'){
+                        return false;
+                    }else if(tilePresent[7][y]!=1&&c!='d'){
+                        return false;
+                    }
+                }           //check edge place
+                boolean connerCheck=true;
+                if(tilePresent[0][0]!=1&&a!='c'&&d!='b'&&a!='d'&&d!='d'){
+                    connerCheck = false;
+                }
+                if(tilePresent[0][7]!=1&&b!='c'&&a!='b'&&a!='d'&&b!='d'){
+                    connerCheck = false;
+                }
+                if(tilePresent[7][0]!=1&&d!='c'&&c!='b'&&d!='d'&&c!='d'){
+                    connerCheck = false;
+                }
+
+                if(!connerCheck)
+                    return false;
+            }              //conner of the board check
+
+            if (row!=0&&row!=7&&col!=0&&col!=7){
+                if(tilePresent[row-1][col]!=1&&tilePresent[row+1][col]!=1&&tilePresent[row][col-1]!=1&&tilePresent[row][col+1]!=1)
+                    return false;
+            }               //check if tile has next tile
         }
+
 
         return true;
     }
@@ -468,5 +722,22 @@ public class Metro {
     public static Tile[] getFreshDeck() {
         Tile[] start = Tile.getStartingTiles();
         return start;
+    }
+
+    /**
+     * A function to check if inner board has empty space
+     *
+     * @param tilePresent
+     * @return a boolean shows if inner board has empty space
+     */
+    private static boolean checkInnerBoard(int[][] tilePresent){
+        for(int x = 1; x<7;x++){
+            for(int y=1; y<7; y++){
+                if(tilePresent[x][y]!=1&&(x!=3)&&(x!=4)&&(y!=3)&&(y!=4)){
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }
