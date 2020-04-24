@@ -15,24 +15,24 @@ public class GenerateMoveTest {
 
     @Test
     public void testEmptyBoard() {
-        String move = Metro.generateMove("", "aaaa", null, 2);
-        assertNotNull("Metro.generateMove(\"\", \"aaaa\", null, 2) returned null", move);
-        assertFalse("Metro.generateMove(\"\", \"aaaa\", null, 2) returned empty string", move.isEmpty());
+        String move = Metro.generateMove("", "aaaa", 2);
+        assertNotNull("Metro.generateMove(\"\", \"aaaa\", 2) returned null", move);
+        assertFalse("Metro.generateMove(\"\", \"aaaa\", 2) returned empty string", move.isEmpty());
         boolean rowCond = move.charAt(4) == '0' || move.charAt(4) == '7';
         boolean colCond = move.charAt(5) == '0' || move.charAt(5) == '7';
         assertTrue("Piece aaaa is invalidly placed at " + move, rowCond || colCond);
 
-        move = Metro.generateMove("", "cccc", null, 2);
-        assertNotNull("Metro.generateMove(\"\", \"cccc\", null, 2) returned null", move);
-        assertFalse("Metro.generateMove(\"\", \"cccc\", null, 2) returned empty string", move.isEmpty());
+        move = Metro.generateMove("", "cccc", 2);
+        assertNotNull("Metro.generateMove(\"\", \"cccc\", 2) returned null", move);
+        assertFalse("Metro.generateMove(\"\", \"cccc\", 2) returned empty string", move.isEmpty());
         rowCond = move.charAt(4) == '0' || move.charAt(4) == '7';
         colCond = move.charAt(5) == '0' || move.charAt(5) == '7';
         boolean cornerCond = !(rowCond && colCond);
         assertTrue("Piece cccc is invalidly placed at " + move, (rowCond || colCond) && cornerCond);
 
-        move = Metro.generateMove("", "dada", null, 2);
-        assertNotNull("Metro.generateMove(\"\", \"dada\", null, 2) returned null", move);
-        assertFalse("Metro.generateMove(\"\", \"dada\", null, 2) returned empty string", move.isEmpty());
+        move = Metro.generateMove("", "dada", 2);
+        assertNotNull("Metro.generateMove(\"\", \"dada\", 2) returned null", move);
+        assertFalse("Metro.generateMove(\"\", \"dada\", 2) returned empty string", move.isEmpty());
         colCond = move.charAt(5) == '0' || move.charAt(5) == '7';
         assertTrue("Piece dada is invalidly placed at " + move, colCond);
 
@@ -44,7 +44,7 @@ public class GenerateMoveTest {
             String moveSet = Utilities.MISCELLANEOUS_MOVES[i];
             String boardString = moveSet.substring(0, moveSet.length() - 4);
             String piece = moveSet.substring(moveSet.length() - 4);
-            String move = Metro.generateMove(boardString, piece, null, i + 2);
+            String move = Metro.generateMove(boardString, piece, i + 2);
 
             assertTrue("Invalid move \"" + move + "\" for board string " + boardString,
                     Utilities.POSSIBLE_MOVES.get(i).contains(move));
@@ -59,10 +59,10 @@ public class GenerateMoveTest {
             String expected = completeBoard.substring(completeBoard.length() - 2);
             String piece = completeBoard.substring(completeBoard.length() - 6, completeBoard.length() - 2);
             int numPlayers = randPlayer.nextInt(5) + 2;
-            String move = Metro.generateMove(nearCompleteBoard, piece, null, numPlayers);
+            String move = Metro.generateMove(nearCompleteBoard, piece, numPlayers);
 
-            assertNotNull("Metro.generateMove(\"" + nearCompleteBoard + "\", \"" + piece + "\", null, " + numPlayers + ") returned null", move);
-            assertFalse("Metro.generateMove(\"" + nearCompleteBoard + "\", " + piece + ", null, " + numPlayers + ") returned empty string", move.isEmpty());
+            assertNotNull("Metro.generateMove(\"" + nearCompleteBoard + "\", \"" + piece + "\", " + numPlayers + ") returned null", move);
+            assertFalse("Metro.generateMove(\"" + nearCompleteBoard + "\", " + piece + ", " + numPlayers + ") returned empty string", move.isEmpty());
             assertEquals("Expected placement in (" + expected.charAt(0) + ", " + expected.charAt(1) +
                     "), got (" + move.charAt(4) + ", " + move.charAt(5) + ")", piece + expected, move);
         }
