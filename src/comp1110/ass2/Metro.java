@@ -1,5 +1,8 @@
 package comp1110.ass2;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Random;
 
 public class Metro {
@@ -488,12 +491,15 @@ public class Metro {
      */
     public static Tile[] sortedOccurrence(String placementSequence) {
         Tile[] sorted = Tile.getStartingTiles();
+        int l = placementSequence.length();
+
+        /*
         //making all occurrences zero
         for (int i = 0; i < sorted.length; ++i) {
             sorted[i].setNumber(0);
         }
+
         //finding the corresponding type for each piece in the placementSequence
-        int l = placementSequence.length();
         for (int i = 0; i < l; i = i + 6) {
             String s = placementSequence.substring(i, i + 4);
             int low = 0;
@@ -513,7 +519,20 @@ public class Metro {
                     high = mid;
             }
         }
-        return sorted;
+        */
+        //Hash map implementation
+        HashMap<String, Integer> occurrence = new HashMap<>();
+        for (Tile value : sorted)
+            occurrence.put(value.getType(), 0);
+        for (int i = 0; i < l; i = i + 6) {
+            String s = placementSequence.substring(i, i + 4);
+            Integer old = occurrence.get(s);
+            occurrence.put(s, old + 1);
+        }
+        for (Tile tile : sorted) {
+            tile.setNumber(occurrence.get(tile.getType()));
+        }
+            return sorted;
     }
 
     /**
@@ -545,7 +564,7 @@ public class Metro {
     /**
      * A function to represent the station arrangement depending on number of players
      *
-     * @param numberOfPlayers
+     * @param numberOfPlayers number of players int he game
      * @return a 2D array containing stations owned by respective players
      */
     public static int[][] stationArrangement(int numberOfPlayers) {
