@@ -74,13 +74,13 @@ public class Viewer extends Application {
     /**
      * Draw the stations
      */
-    void showStations(){
+     public static void showStations(Group root){
         Group stations = new Group();
         // top represents all the stations on the top(1-8)
-        Group top = new Group();
+         Group top = new Group();
         for (int i=1; i<dim+1;++i){
             ImageView im = new ImageView();
-            im.setImage(new Image(this.getClass().getResource(URI_BASE + "station" + i +".jpg").toString()));
+            im.setImage(new Image(Viewer.class.getResource(URI_BASE + "station" + i +".jpg").toString()));
             im.setRotate(180);
             im.setFitHeight(SQUARE_SIZE);
             im.setFitWidth(SQUARE_SIZE);
@@ -94,7 +94,7 @@ public class Viewer extends Application {
         Group left = new Group();
         for (int i=dim+1;i<=dim*2;++i){
             ImageView im = new ImageView();
-            im.setImage(new Image(this.getClass().getResource(URI_BASE + "station" + i +".jpg").toString()));
+            im.setImage(new Image(Viewer.class.getResource(URI_BASE + "station" + i +".jpg").toString()));
             im.setRotate(90);
             im.setFitHeight(SQUARE_SIZE);
             im.setFitWidth(SQUARE_SIZE);
@@ -108,7 +108,7 @@ public class Viewer extends Application {
         Group bottom = new Group();
         for (int i=dim*2+1;i<=dim*3;++i){
             ImageView im = new ImageView();
-            im.setImage(new Image(this.getClass().getResource(URI_BASE + "station" + i +".jpg").toString()));
+            im.setImage(new Image(Viewer.class.getResource(URI_BASE + "station" + i +".jpg").toString()));
             im.setFitHeight(SQUARE_SIZE);
             im.setFitWidth(SQUARE_SIZE);
             im.setLayoutY(0);
@@ -121,7 +121,7 @@ public class Viewer extends Application {
         Group right = new Group();
         for (int i=dim*3+1;i<=dim*4;++i){
             ImageView im = new ImageView();
-            im.setImage(new Image(this.getClass().getResource(URI_BASE + "station" + i +".jpg").toString()));
+            im.setImage(new Image(Viewer.class.getResource(URI_BASE + "station" + i +".jpg").toString()));
             im.setRotate(270);
             im.setFitHeight(SQUARE_SIZE);
             im.setFitWidth(SQUARE_SIZE);
@@ -135,7 +135,7 @@ public class Viewer extends Application {
         Group corner = new Group();
         //center represents center stations, first layout is set amongst them and then whole centre block is placed
         Group center = new Group();
-        Image im = new Image(this.getClass().getResource(URI_BASE+"centre_station.jpg").toString());
+        Image im = new Image(Viewer.class.getResource(URI_BASE+"centre_station.jpg").toString());
         ImageView c1 = new ImageView(im);
         c1.setFitWidth(SQUARE_SIZE);
         c1.setFitHeight(SQUARE_SIZE);
@@ -209,7 +209,7 @@ public class Viewer extends Application {
         primaryStage.setTitle("Metro Game Viewer");
         Scene scene = new Scene(root, VIEWER_WIDTH, VIEWER_HEIGHT);
         root.getChildren().add(controls);
-        showStations();
+        showStations(root);
         makeControls();
 
         primaryStage.setScene(scene);
