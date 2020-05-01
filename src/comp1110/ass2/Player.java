@@ -19,4 +19,8 @@ public class Player {
      */
     public void updateTileHolding(Tile tile){
     }
+
+    public String getName(){
+        return this.name;
+    }
 }
