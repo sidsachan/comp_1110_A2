@@ -487,7 +487,6 @@ public class Metro {
                     check=true;
                 }
             }
-
         return result;
     }
 
