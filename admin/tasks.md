@@ -22,7 +22,9 @@ Siddharth doing task 7.
 ## Week 6
 
 ## Week 7
-
+Meeting time: April 30, 2 pm.
+Hengrui is working on task 9.
+Siddharth doing task 8.
 ## Week 8
 
 ## Week 9
