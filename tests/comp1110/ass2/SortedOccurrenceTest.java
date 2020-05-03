@@ -11,7 +11,7 @@ import java.util.Random;
 
 import static org.junit.Assert.assertTrue;
 
-public class sortedOccurrenceTest {
+public class SortedOccurrenceTest {
 
     @Rule
     public Timeout globaltimeout = Timeout.millis(1000);
