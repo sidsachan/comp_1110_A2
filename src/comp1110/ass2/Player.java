@@ -35,4 +35,12 @@ public class Player {
     public void updateScore(int score){
         this.score = score;
     }
+
+    /**
+     * function to get score of a player
+     * @return int representing the score of a player
+     */
+    public int getScore(){
+        return this.score;
+    }
 }
