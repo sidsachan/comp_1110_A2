@@ -778,10 +778,10 @@ public class Metro {
      * @param tilePresent array shows board space
      * @return a boolean shows if inner board has empty space
      */
-    private static boolean checkInnerBoard(int[][] tilePresent){
+    public static boolean checkInnerBoard(int[][] tilePresent){
         for(int x = 1; x<7;x++){
             for(int y=1; y<7; y++){
-                if(tilePresent[x][y]!=1&&(x!=3)&&(x!=4)&&(y!=3)&&(y!=4)){
+                if(tilePresent[x][y]!=1&&(((x!=3)&&(x!=4))||((y!=3)&&(y!=4)))){
                     return false;
                 }
             }
