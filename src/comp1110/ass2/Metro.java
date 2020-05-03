@@ -3,11 +3,6 @@ package comp1110.ass2;
 import java.util.*;
 
 public class Metro {
-
-    private int numberOfPlayers;        //number of players in a particular game
-    private String placementSequence;       //the string representing game board situation
-    private Player turnOfPlayer;        //Player whose turn it is currently
-
     /**
      * Task 2
      * Determine whether a piece placement is well-formed. For a piece
@@ -767,9 +762,17 @@ public class Metro {
      *
      * @return a tile array containing randomised tiles, a shuffled deck for playing
      */
-    public static Tile[] getFreshDeck() {
+    public static ArrayList<String> getFreshDeck() {
         Tile[] start = Tile.getStartingTiles();
-        return start;
+        ArrayList<String > deck = new ArrayList<>();
+        for (Tile tile : start) {
+            for (int i = 0; i < tile.getNumber();++i) {
+                String type = tile.getType();
+                deck.add(type);
+            }
+        }
+        Collections.shuffle(deck);
+        return deck;
     }
 
     /**
@@ -788,4 +791,19 @@ public class Metro {
         }
         return true;
     }
+
+    /**
+     *function to update the scores of players
+     * @param placementSequence the current state of the board
+     * @param playerArrayList array list containing players info
+     * @return array list with updated scores
+     */
+    public static ArrayList<Player> assignScore(String placementSequence, ArrayList<Player> playerArrayList){
+        int[] scores = getScore(placementSequence,playerArrayList.size());
+        for (int i=0;i<scores.length;i++){
+            playerArrayList.get(i).updateScore(scores[i]);
+        }
+        return playerArrayList;
+    }
+
 }
