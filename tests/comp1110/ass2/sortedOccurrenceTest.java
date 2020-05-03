@@ -113,24 +113,21 @@ public class sortedOccurrenceTest {
             assertTrue("Expected: " + tilesExpected[i].getNumber() +"\nBut got: "+ functionOutput[i].getNumber(), tilesExpected[i].getType().equals(functionOutput[i].getType()));
             }
     }
-/*
     @Test
     public void randomBoardString(){
         Tile[] tilesExpected = Tile.getStartingTiles();
-        //forming random full board string
+        //forming random board string comprising of one of the each type of tile
         StringBuilder boardString = new StringBuilder();
+        //converting to array list to uses shuffle function
         ArrayList<Tile> tileArrayList = new ArrayList<>();
         for (Tile tile : tilesExpected) {
-            for (int i = 0; i < tile.getNumber();++i) {
                 Tile t = new Tile(tile.getType(),1);
                 tileArrayList.add(t);
-            }
+                tile.setNumber(1);
         }
         Collections.shuffle(tileArrayList);
-        Random random = new Random();
-        int length = random.nextInt(60);
-        for (int i = 0; i<length; i++){
-            boardString = boardString.append(tileArrayList.get(i).getType() + "00");
+        for (Tile tile:tileArrayList){
+            boardString = boardString.append(tile.getType() + "00");
         }
         Tile[] functionOutput = Metro.sortedOccurrence(String.valueOf(boardString));
         //Comparison of tile type and count
@@ -139,5 +136,4 @@ public class sortedOccurrenceTest {
             assertTrue("Incorrect tile count at " + i +" th position in sorted array", tilesExpected[i].getNumber()==(functionOutput[i].getNumber()));
         }
     }
- */
 }
