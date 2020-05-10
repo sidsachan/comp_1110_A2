@@ -1,0 +1,24 @@
+# Write your name and UID here.
+#
+reviewer:
+    name: Hengrui Xu
+    uid: u7014347
+
+# Write the name of the author of the code here.
+#
+author:
+  name: Siddharth Sachan
+  uid: u7072580
+
+# Write the class or method being reviewed here.
+#
+component: getScore()   getScoreForStation()
+
+# Write a list of review comments here.
+#
+comments:
+  - Excellent code that fully implements the required functionality. Clearly structured and organized.
+  - The comments does a good job of explaining what the code does.
+
+
+

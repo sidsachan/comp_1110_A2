@@ -467,16 +467,15 @@ public class Metro {
                 }
             }
         }
-            while(!check){
+            while(!check){              //check if the sequence is valid. If not, remove the last move and create a new one
                 Random random = new Random();
                 int num = random.nextInt(board.size());
                 String place = board.get(num).getName();
                 placementSequence = placementSequence.concat(piece);
-                placementSequence = placementSequence.concat(place);
+                placementSequence = placementSequence.concat(place);        //add a random move
                 if(!isPlacementSequenceValid(placementSequence)){
                     board.remove(num);
                     placementSequence=placementSequence.substring(0,placementSequence.length()-6);
-                    int i = 1;
                 }else {
                     result = piece.concat(place);
                     check=true;
