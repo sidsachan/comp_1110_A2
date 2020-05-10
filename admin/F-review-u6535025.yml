@@ -16,7 +16,8 @@ component: getScore()
 
 # Write a list of review comments here.
 #
-comments: The best features of this code is efficiency；
+comments:
+  - The best features of this code is efficiency；
   - The program decomposition is just right, the method structure is concisely and clearly.
   - The comments follow the Java code conventions perfectly, I can tell by its name what it is and what it does.
 
