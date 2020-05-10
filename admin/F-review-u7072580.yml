@@ -1,0 +1,25 @@
+# Write your name and UID here.
+#
+reviewer:
+    name: Siddharth Sachan
+    uid: u7072580
+
+# Write the name of the author of the code here.
+#
+author:
+  name: Hengrui Xu
+  uid: u7014347
+
+# Write the class or method being reviewed here.
+#
+component: generateMove() isPlacementSequenceValid()
+
+# Write a list of review comments here.
+#
+comments:
+  - Code structure is quite logically.
+  - It is easy to follow because of the comments.
+  - In part when already played positions are removed (Metro class, lines 460-469), we may try with Collection.contains or somethig instead of the loop.
+  - Conditions checked in isPlacementSequenceValid() are easily understandable.
+  - It might be helpful to make a helper function which just checks the validity of the last added tile assuming that placementSequence before that is valid.
+  - This may help in improving the speed especially towards end of the game when placementSequence is long.
