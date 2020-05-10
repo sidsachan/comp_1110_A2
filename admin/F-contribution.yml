@@ -9,9 +9,9 @@ declaration: >-
 # members).  
 contributions:
   - uid: u7014347
-    contribution: 
-  - uid:
-    contribution:
+    contribution: 70
+  - uid: u7072580
+    contribution: 30
   - uid:
     contribution:
 
@@ -20,7 +20,7 @@ contributions:
 signatures:
   - name: Hengrui Xu
     uid: u7014347
-  - name:
-    uid:
+  - name: Siddharth Sachan
+    uid: u7072580
   - name:
     uid:
