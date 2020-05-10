@@ -12,8 +12,8 @@ contributions:
     contribution: 70
   - uid: u7072580
     contribution: 30
-  - uid:
-    contribution:
+  - uid: u6535025
+    contribution: 0
 
 # Sign *your* name and uids here. (Remove entries if you have fewer
 # than three members)
@@ -22,5 +22,5 @@ signatures:
     uid: u7014347
   - name: Siddharth Sachan
     uid: u7072580
-  - name:
-    uid:
+  - name: Runkai Huang
+    uid: u6535025

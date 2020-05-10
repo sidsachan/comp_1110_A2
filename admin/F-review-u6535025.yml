@@ -1,0 +1,24 @@
+# Write your name and UID here.
+#
+reviewer:
+  name: Runkai Huang
+  uid: u6535025
+
+# Write the name of the author of the code here.
+#
+author:
+  name: Siddharth Sachan
+  uid: u7072580
+
+# Write the class or method being reviewed here.
+#
+component: getScore()
+
+# Write a list of review comments here.
+#
+comments: The best features of this code is efficiency；
+  - The program decomposition is just right, the method structure is concisely and clearly.
+  - The comments follow the Java code conventions perfectly, I can tell by its name what it is and what it does.
+
+
+
