@@ -112,10 +112,11 @@ public class Game extends Application {
                     } else if (Metro.isPlacementSequenceValid(possiblePlacement)) {
                         this.setLayoutX(closest.getLayoutX() + emptyBoard.getLayoutX());
                         this.setLayoutY(closest.getLayoutY() + emptyBoard.getLayoutY());
-                        placementSequence.append(possiblePlacement);
+                        placementSequence.append(tileType + row + column);
                         this.isDraggable = false;
                         isCardShowing = false;
                         deck.remove(0);
+                        updateScoreBoard(placementSequence.toString());
                     } else {
                         this.setLayoutX(initialX);
                         this.setLayoutY(initialY);
@@ -391,8 +392,11 @@ public class Game extends Application {
         Rectangle emptyTileInHand = new Rectangle();
         String name = "";
         Text turnOf = new Text(name + "'s turn");
+        turnOf.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 20));
         Text deckHeading = new Text("Deck");
+        deckHeading.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 15));
         Text tileInHandHeading = new Text("Tile In Hand");
+        tileInHandHeading.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 15));
 
         emptyFaceUpDeck.setWidth(SQUARE_SIZE);
         emptyFaceUpDeck.setHeight(SQUARE_SIZE);
@@ -403,7 +407,7 @@ public class Game extends Application {
         draw.setOnAction(actionEvent -> {
             if(deck.size()!=0 && !isCardShowing) {
                 String tileType = deck.get(0);
-                DraggableImage draggableImage = new DraggableImage(SQUARE_SIZE,tileType,tileHandling.getLayoutX() + tileHandling.getChildren().get(0).getLayoutX(),tileHandling.getLayoutY() + tileHandling.getChildren().get(0).getLayoutY());
+                DraggableImage draggableImage = new DraggableImage(SQUARE_SIZE,tileType,tileHandling.getLayoutX() + tileHandling.getChildren().get(2).getLayoutX(),tileHandling.getLayoutY() + tileHandling.getChildren().get(2).getLayoutY());
                 root.getChildren().add(draggableImage);
                 isCardShowing = true;
             }
@@ -416,10 +420,9 @@ public class Game extends Application {
         tileHandling.getChildren().addAll(turnOf, deckHeading, emptyFaceUpDeck, draw, tileInHandHeading, emptyTileInHand);
         tileHandling.setLayoutY(350);
         tileHandling.setLayoutX(800);
-        tileHandling.setSpacing(20);
+        tileHandling.setSpacing(15);
         tileHandling.setAlignment(Pos.CENTER);
         root.getChildren().add(tileHandling);
-        System.out.println(tileHandling.getLayoutX()+tileHandling.getChildren().get(0).getLayoutX());
     }
 
     /**
