@@ -3,12 +3,19 @@ package comp1110.ass2.gui;
 import comp1110.ass2.Metro;
 import comp1110.ass2.Player;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
@@ -30,6 +37,7 @@ public class Game extends Application {
     private final Group root = new Group();
     private final Group controls = new Group();
     private final Group scoreBoard = new Group();
+    private final GridPane emptyBoard = new GridPane();
     private final Group stations = new Group();
     private final GridPane nameAndScore = new GridPane();
 
@@ -37,16 +45,141 @@ public class Game extends Application {
     private int numberOfComputerPlayers;
     private int numberOfPlayers;
     private ArrayList<Player> playerArrayList = new ArrayList<>();
-    private ArrayList<String> deck = Metro.getFreshDeck();
+    private ArrayList<String> deck = new ArrayList<>();
+    private ArrayList<Rectangle> emptyBoardSquares = new ArrayList<>();
+    private Rectangle highlighted = null;
+    private StringBuilder placementSequence = new StringBuilder();
+    
 
     /**
-     * slider and subsequent boxes to add number of player and their names
-     * number of computer players
+     * a class for making a draggable image
+     */
+    class DraggableImage extends ImageView {
+        double mouseXOffset;
+        double mouseYOffset;
+        private final double INITIAL_X = 800;
+        private final double INITIAL_Y = 300;
+        boolean isDraggable = true;
+
+        DraggableImage(double size, String tileType){
+            super();
+            this.setImage(new Image(this.getClass().getResource(URI_BASE + tileType + ".jpg").toString()));
+            this.setFitWidth(size);
+            this.setFitHeight(size);
+            this.setLayoutX(INITIAL_X);
+            this.setLayoutY(INITIAL_Y);
+
+            this.setOnMousePressed(event->{
+                if(isDraggable) {
+                    mouseXOffset = this.getLayoutX() - event.getSceneX();
+                    mouseYOffset = this.getLayoutY() - event.getSceneY();
+                }
+            });
+
+            this.setOnMouseDragged(event->{
+                if(isDraggable) {
+                    this.setLayoutX(event.getSceneX() + mouseXOffset);
+                    this.setLayoutY(event.getSceneY() + mouseYOffset);
+
+                    Rectangle closest = findClosestRectangle(this.getLayoutX(),this.getLayoutY());
+                    if(highlighted!= null){
+                        highlighted.setFill(Color.LIGHTGRAY);
+                    }
+                    int row = GridPane.getRowIndex(closest);
+                    int column = GridPane.getColumnIndex(closest);
+                    String possiblePlacement = placementSequence +tileType + row + column;
+
+                    if(Metro.isPlacementSequenceValid(possiblePlacement)){
+                        closest.setFill(Color.GREEN);
+                    }
+                    else
+                        closest.setFill(Color.RED);
+                    highlighted = closest;
+                }
+            });
+
+            this.setOnMouseReleased(event->{
+                if(emptyBoardSquares.size()>0 && isDraggable){
+                    Rectangle closest = findClosestRectangle(this.getLayoutX(),this.getLayoutY());
+                    int row = GridPane.getRowIndex(closest);
+                    int column = GridPane.getColumnIndex(closest);
+                    String possiblePlacement = placementSequence +tileType+row+column;
+
+                    if(Metro.isPlacementSequenceValid(possiblePlacement)){
+                        this.setLayoutX(closest.getLayoutX() + emptyBoard.getLayoutX());
+                        this.setLayoutY(closest.getLayoutY() + emptyBoard.getLayoutY());
+                        placementSequence.append(possiblePlacement);
+                        this.isDraggable = false;
+                    }
+                    else {
+                        this.setLayoutX(INITIAL_X);
+                        this.setLayoutY(INITIAL_Y);
+                    }
+                    highlighted.setFill(Color.LIGHTGRAY);
+                    highlighted = null;
+
+                }
+            });
+        }
+    }
+
+    /**
+     * @param r the rectangle
+     * @param x x coordinate of the point
+     * @param y y coordinate of the point
+     * @return distance between layouts of a rectangle and another point
+     */
+    private double distanceToRectangle (Rectangle r, double x, double y){
+        double dx = x - r.getLayoutX() - emptyBoard.getLayoutX();
+        double dy = y - r.getLayoutY() - emptyBoard.getLayoutY();
+        return Math.sqrt(Math.pow(dx,2) + Math.pow(dy,2));
+
+    }
+
+    /**
+     * finding closest rectangle (in the array list) to a given location
+     * @param x x coordinates of the location
+     * @param y y coordinates of the location
+     * @return the closest rectangle
+     */
+    private Rectangle findClosestRectangle (double x, double y){
+        Rectangle closest = null;
+        double closestDistance = Double.MAX_VALUE;
+        for (Rectangle r: emptyBoardSquares){
+            double distance = distanceToRectangle(r,x,y);
+            if(distance<closestDistance){
+                closestDistance = distance;
+                closest = r;
+            }
+        }
+        return closest;
+    }
+
+    /**
+     * Indicate which players' turn
+     * Restart button
      * maybe difficulty in future (if playing with computer)
      */
     private void makeControls() {
-        Group initialControls = new Group();
-        controls.getChildren().add(initialControls);
+
+        Label l1 = new Label("Difficulty");
+        Slider slider = new Slider();
+        Label l2 = new Label("Turn of");
+        Text name = new Text();
+        Button st = new Button("START");
+        st.setOnAction(event->{
+            getPlayerInfo();
+            showEmptyBoard();
+            initiateScoreBoard();
+            deck = Metro.getFreshDeck();
+//            dealdeck();
+        });
+        HBox bottomControls = new HBox();
+        bottomControls.getChildren().addAll(l1,slider,st, l2, name);
+        bottomControls.setLayoutX(100);
+        bottomControls.setLayoutY(VIEWER_HEIGHT-50);
+        bottomControls.setSpacing(30);
+        controls.getChildren().add(bottomControls);
     }
 
     /**
@@ -55,6 +188,25 @@ public class Game extends Application {
     private void showEmptyBoard() {
         Viewer.showStations(stations);
         root.getChildren().add(stations);
+        //making light gray rectangles for the empty positions on the board
+        for (int i=0;i<DIM;i++) {
+            for (int j = 0; j < DIM; j++) {
+                if((i==3||i==4) && (j==3||j==4))
+                    continue;
+                Rectangle r = new Rectangle();
+                r.setWidth(SQUARE_SIZE);
+                r.setHeight(SQUARE_SIZE);
+                r.setArcWidth(3);
+                r.setArcHeight(3);
+                r.setFill(Color.LIGHTGRAY);
+                emptyBoardSquares.add(r);
+                emptyBoard.add(r,i,j);
+            }
+        }
+        //emptyBoard.setGridLinesVisible(true);
+        emptyBoard.setLayoutX(SQUARE_SIZE);
+        emptyBoard.setLayoutY(SQUARE_SIZE);
+        root.getChildren().add(emptyBoard);
     }
 
     /**
@@ -168,7 +320,6 @@ public class Game extends Application {
             for (int i = 0; i < numberOfComputerPlayers; i++) {
                 playerArrayList.add(new Player("C" + (i + 1)));
             }
-            initiateScoreBoard();
         }
     }
 
@@ -227,7 +378,6 @@ public class Game extends Application {
         scoreBoard.setLayoutX(VIEWER_WIDTH - headingWidth);
         scoreBoard.setLayoutY(50);
         root.getChildren().add(scoreBoard);
-        showEmptyBoard();
         //for checking the working of updateScore function
 //        updateScoreBoard("");
     }
@@ -261,6 +411,7 @@ public class Game extends Application {
         makeControls();
         root.getChildren().add(controls);
         primaryStage.show();
-        getPlayerInfo();
+        DraggableImage di = new DraggableImage(SQUARE_SIZE, "aaaa");
+        root.getChildren().add(di);
     }
 }
