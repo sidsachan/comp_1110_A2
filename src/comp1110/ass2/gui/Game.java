@@ -114,6 +114,7 @@ public class Game extends Application {
                             tileInHandImages.put(indexOfPlayersTurn,this);
                             isCardShowing = false;
                             deck.remove(0);
+                            autoDraw();
                         }
                         else{
                         this.setLayoutX(initialX);
@@ -121,8 +122,14 @@ public class Game extends Application {
                         }
                     }
                     else if(closestDistance > 2 * SQUARE_SIZE && playerArrayList.get(indexOfPlayersTurn).isHolding()){
-                        this.setLayoutX(tileHandling.getLayoutX() + tileHandling.getChildren().get(5).getLayoutX());
-                        this.setLayoutY(tileHandling.getLayoutY() + tileHandling.getChildren().get(5).getLayoutY());
+                        if(this == tileInHandImages.get(indexOfPlayersTurn)){
+                            this.setLayoutX(tileHandling.getLayoutX() + tileHandling.getChildren().get(5).getLayoutX());
+                            this.setLayoutY(tileHandling.getLayoutY() + tileHandling.getChildren().get(5).getLayoutY());
+                        }
+                        else{
+                            this.setLayoutX(initialX);
+                            this.setLayoutY(initialY);
+                        }
                     }
                     else if (Metro.isPlacementSequenceValid(possiblePlacement)) {
                         this.setLayoutX(closest.getLayoutX() + emptyBoard.getLayoutX());
@@ -198,8 +205,8 @@ public class Game extends Application {
             showEmptyBoard();
             getPlayerInfo();
             initiateScoreBoard();
-            initializeTileHandling();
             deck = Metro.getFreshDeck();
+            initializeTileHandling();
         });
         HBox bottomControls = new HBox();
         bottomControls.getChildren().addAll(l1, slider, st);
@@ -253,6 +260,7 @@ public class Game extends Application {
             root.getChildren().add(tileInHandImages.get(indexOfPlayersTurn));
             tileInHandImages.get(indexOfPlayersTurn).isDraggable = true;
         }
+        else autoDraw();
 
     }
     /**
@@ -442,7 +450,8 @@ public class Game extends Application {
         emptyFaceUpDeck.setArcWidth(3);
         emptyFaceUpDeck.setArcHeight(3);
         emptyFaceUpDeck.setFill(Color.LIGHTGRAY);
-        Button draw = new Button("DRAW");
+        Button draw = new Button("Let's Go!!!");
+        //autoDraw();
         draw.setOnAction(actionEvent -> {
             if(deck.size()!=0 && !isCardShowing) {
                 String tileType = deck.get(0);
@@ -462,6 +471,13 @@ public class Game extends Application {
         tileHandling.setSpacing(15);
         tileHandling.setAlignment(Pos.CENTER);
         root.getChildren().add(tileHandling);
+    }
+
+    private void autoDraw(){
+        String tileType = deck.get(0);
+        DraggableImage draggableImage = new DraggableImage(SQUARE_SIZE,tileType,tileHandling.getLayoutX() + tileHandling.getChildren().get(2).getLayoutX(),tileHandling.getLayoutY() + tileHandling.getChildren().get(2).getLayoutY());
+        root.getChildren().add(draggableImage);
+        isCardShowing = true;
     }
 
     /**
