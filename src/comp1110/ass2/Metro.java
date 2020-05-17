@@ -805,4 +805,24 @@ public class Metro {
         return playerArrayList;
     }
 
+    /**
+     *  a function to decide whether to draw from deck if you(computer) have a piece in hand
+     * @param placementSequence the board state
+     * @param tileInHand the in hand tile type
+     * @return true if you want to draw from deck, false otherwise
+     */
+    public static boolean shouldDraw(String placementSequence, String tileInHand){
+        return true;
+    }
+
+    /**
+     * a function to decide whether to keep a tile in hand or place it on the board
+     * @param placementSequence the board state
+     * @param tileOnDeck tile type on top of the deck
+     * @return true if you want to place  it in hand, false if you want to play it on board
+     */
+    public static boolean shouldKeepInHand(String placementSequence, String tileOnDeck){
+        return false;
+    }
+
 }
