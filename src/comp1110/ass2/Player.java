@@ -8,7 +8,7 @@ public class Player {
     public Player(String name) {
         this.name = name;
         this.score = 0;
-        this.tileInHand = null;
+        this.tileInHand = "";
     }
 
     /**
@@ -18,6 +18,7 @@ public class Player {
      * @param tile A String representing the piece to be placed
      */
     public void updateTileHolding(String tile){
+        this.tileInHand = tile;
     }
 
     /**
@@ -42,5 +43,11 @@ public class Player {
      */
     public int getScore(){
         return this.score;
+    }
+
+    public  boolean isHolding(){
+        if(this.tileInHand=="")
+            return false;
+        return true;
     }
 }
