@@ -45,6 +45,16 @@ public class Player {
         return this.score;
     }
 
+    /**
+     * function to get the tile in hand
+     * @return tile type of the tile in hand
+     */
+    public String getTileInHand(){return this.tileInHand; }
+
+    /**
+     * function to determine if tile is in hand
+     * @return true if player has a tile  in hand, false otherwise
+     */
     public  boolean isHolding(){
         if(this.tileInHand=="")
             return false;
