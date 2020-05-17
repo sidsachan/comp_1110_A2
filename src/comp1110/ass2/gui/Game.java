@@ -3,11 +3,10 @@ package comp1110.ass2.gui;
 import comp1110.ass2.Metro;
 import comp1110.ass2.Player;
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -24,10 +23,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class Game extends Application {
     private static final int SQUARE_SIZE = 70;
@@ -50,9 +46,11 @@ public class Game extends Application {
     private ArrayList<Player> playerArrayList = new ArrayList<>();
     private ArrayList<String> deck = new ArrayList<>();
     private ArrayList<Rectangle> emptyBoardSquares = new ArrayList<>();
+    private HashMap<Integer, DraggableImage> tileInHandImages = new HashMap<>();
     private Rectangle highlighted = null;
     private StringBuilder placementSequence = new StringBuilder();
     private boolean isCardShowing = false;
+    private int indexOfPlayersTurn = 0;
 
     /**
      * a class for making a draggable image
@@ -106,24 +104,48 @@ public class Game extends Application {
                     int column = GridPane.getColumnIndex(closest);
                     String possiblePlacement = placementSequence + tileType + row + column;
                     double closestDistance = distanceToRectangle(closest, this.getLayoutX(), this.getLayoutY());
-                    if (closestDistance > 2 * SQUARE_SIZE) {
+
+                    if (closestDistance > 2 * SQUARE_SIZE && !playerArrayList.get(indexOfPlayersTurn).isHolding()) {
+                        if(distanceToRectangle(tileHandling.getChildren().get(5),this.getLayoutX(), this.getLayoutY()) < 1.5*SQUARE_SIZE){
+                            this.setLayoutX(tileHandling.getLayoutX() + tileHandling.getChildren().get(5).getLayoutX());
+                            this.setLayoutY(tileHandling.getLayoutY() + tileHandling.getChildren().get(5).getLayoutY());
+                            playerArrayList.get(indexOfPlayersTurn).updateTileHolding(tileType);
+                            this.isDraggable = false;
+                            tileInHandImages.put(indexOfPlayersTurn,this);
+                            isCardShowing = false;
+                            deck.remove(0);
+                        }
+                        else{
                         this.setLayoutX(initialX);
                         this.setLayoutY(initialY);
-                    } else if (Metro.isPlacementSequenceValid(possiblePlacement)) {
+                        }
+                    }
+                    else if(closestDistance > 2 * SQUARE_SIZE && playerArrayList.get(indexOfPlayersTurn).isHolding()){
+                        this.setLayoutX(tileHandling.getLayoutX() + tileHandling.getChildren().get(5).getLayoutX());
+                        this.setLayoutY(tileHandling.getLayoutY() + tileHandling.getChildren().get(5).getLayoutY());
+                    }
+                    else if (Metro.isPlacementSequenceValid(possiblePlacement)) {
                         this.setLayoutX(closest.getLayoutX() + emptyBoard.getLayoutX());
                         this.setLayoutY(closest.getLayoutY() + emptyBoard.getLayoutY());
-                        placementSequence.append(tileType + row + column);
+                        placementSequence.append(tileType).append(row).append(column);
                         this.isDraggable = false;
                         isCardShowing = false;
+                        emptyBoardSquares.remove(closest);
                         deck.remove(0);
                         updateScoreBoard(placementSequence.toString());
-                    } else {
+                        if(this == tileInHandImages.get(indexOfPlayersTurn))
+                            playerArrayList.get(indexOfPlayersTurn).updateTileHolding("");
+                        if(indexOfPlayersTurn==playerArrayList.size()-1)
+                            indexOfPlayersTurn = 0;
+                        else indexOfPlayersTurn++;
+                        updateTileHandling();
+                    }
+                    else if (isCardShowing){
                         this.setLayoutX(initialX);
                         this.setLayoutY(initialY);
                     }
                     highlighted.setFill(Color.LIGHTGRAY);
                     highlighted = null;
-
                 }
             });
         }
@@ -135,7 +157,7 @@ public class Game extends Application {
      * @param y y coordinate of the point
      * @return distance between layouts of a rectangle and another point
      */
-    private double distanceToRectangle(Rectangle r, double x, double y) {
+    private double distanceToRectangle(Node r, double x, double y) {
         double dx = x - r.getLayoutX() - r.getParent().getLayoutX();
         double dy = y - r.getLayoutY() - r.getParent().getLayoutY();
         return Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
@@ -215,6 +237,25 @@ public class Game extends Application {
     }
 
     /**
+     * function to update the player name in tile handling VBox
+     */
+    private void updateTileHandling(){
+        Text turnOf = new Text(playerArrayList.get(indexOfPlayersTurn).getName() +"'s turn");
+        turnOf.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 20));
+        tileHandling.getChildren().set(0,turnOf);
+        int previousPlayer = indexOfPlayersTurn - 1;
+        if(indexOfPlayersTurn==0)
+            previousPlayer = numberOfPlayers-1;
+        if(playerArrayList.get(previousPlayer).isHolding())
+            root.getChildren().remove(tileInHandImages.get(previousPlayer));
+
+        if(playerArrayList.get(indexOfPlayersTurn).isHolding()) {
+            root.getChildren().add(tileInHandImages.get(indexOfPlayersTurn));
+            tileInHandImages.get(indexOfPlayersTurn).isDraggable = true;
+        }
+
+    }
+    /**
      * first function called to et player info, in turn calls
      * getComputerPlayer to find computer opponents
      */
@@ -253,12 +294,13 @@ public class Game extends Application {
 
         Optional<Integer> result = dialog.showAndWait();
         if (result.isPresent()) {
-            if (numberOfHumanPlayers + result.get() > 6) {
+            if (numberOfHumanPlayers + result.get() > 6 ||numberOfHumanPlayers + result.get() < 2) {
                 playerCountError();
-            } else
+            } else {
                 numberOfComputerPlayers = result.get();
-            numberOfPlayers = numberOfHumanPlayers + numberOfComputerPlayers;
-            getPlayersName();
+                numberOfPlayers = numberOfHumanPlayers + numberOfComputerPlayers;
+                getPlayersName();
+            }
         } else {
             getPlayerInfo();
         }
@@ -272,7 +314,7 @@ public class Game extends Application {
         String titleTxt = "Oh No!!";
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(titleTxt);
-        String header = "Maximum number of player allowed is 6.\n" + " Please reselect number of computer opponents or human players.";
+        String header = "Total number of players must be between 2 and 6.\n" + " Please reselect number of computer opponents or human players.";
         alert.setContentText(header);
         alert.showAndWait();
         getComputerPlayers();
@@ -383,15 +425,12 @@ public class Game extends Application {
         scoreBoard.setLayoutX(VIEWER_WIDTH - headingWidth);
         scoreBoard.setLayoutY(50);
         root.getChildren().add(scoreBoard);
-        //for checking the working of updateScore function
-//        updateScoreBoard("");
     }
 
     private void initializeTileHandling(){
         Rectangle emptyFaceUpDeck = new Rectangle();
         Rectangle emptyTileInHand = new Rectangle();
-        String name = "";
-        Text turnOf = new Text(name + "'s turn");
+        Text turnOf = new Text(playerArrayList.get(indexOfPlayersTurn).getName() +"'s turn");
         turnOf.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 20));
         Text deckHeading = new Text("Deck");
         deckHeading.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 15));
@@ -463,7 +502,5 @@ public class Game extends Application {
         makeControls();
         root.getChildren().add(controls);
         primaryStage.show();
-//        DraggableImage di = new DraggableImage(SQUARE_SIZE, "aaaa", 800,400);
-//        root.getChildren().add(di);
     }
 }
