@@ -24,6 +24,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class Game extends Application {
     private static final int SQUARE_SIZE = 70;
@@ -88,8 +89,8 @@ public class Game extends Application {
                     int column = GridPane.getColumnIndex(closest);
                     String possiblePlacement = placementSequence + tileType + row + column;
                     double closestDistance = distanceToRectangle(closest, this.getLayoutX(), this.getLayoutY());
-                    if (closestDistance > 2 * SQUARE_SIZE){}
-                    else if (Metro.isPlacementSequenceValid(possiblePlacement)) {
+                    if (closestDistance > 2 * SQUARE_SIZE) {
+                    } else if (Metro.isPlacementSequenceValid(possiblePlacement)) {
                         closest.setFill(Color.GREEN);
                     } else
                         closest.setFill(Color.RED);
@@ -106,32 +107,28 @@ public class Game extends Application {
                     double closestDistance = distanceToRectangle(closest, this.getLayoutX(), this.getLayoutY());
 
                     if (closestDistance > 2 * SQUARE_SIZE && !playerArrayList.get(indexOfPlayersTurn).isHolding()) {
-                        if(distanceToRectangle(tileHandling.getChildren().get(5),this.getLayoutX(), this.getLayoutY()) < 1.5*SQUARE_SIZE){
+                        if (distanceToRectangle(tileHandling.getChildren().get(5), this.getLayoutX(), this.getLayoutY()) < 1.5 * SQUARE_SIZE) {
                             this.setLayoutX(tileHandling.getLayoutX() + tileHandling.getChildren().get(5).getLayoutX());
                             this.setLayoutY(tileHandling.getLayoutY() + tileHandling.getChildren().get(5).getLayoutY());
                             playerArrayList.get(indexOfPlayersTurn).updateTileHolding(tileType);
                             this.isDraggable = false;
-                            tileInHandImages.put(indexOfPlayersTurn,this);
+                            tileInHandImages.put(indexOfPlayersTurn, this);
                             isCardShowing = false;
                             deck.remove(0);
                             autoDraw();
-                        }
-                        else{
-                        this.setLayoutX(initialX);
-                        this.setLayoutY(initialY);
-                        }
-                    }
-                    else if(closestDistance > 2 * SQUARE_SIZE && playerArrayList.get(indexOfPlayersTurn).isHolding()){
-                        if(this == tileInHandImages.get(indexOfPlayersTurn)){
-                            this.setLayoutX(tileHandling.getLayoutX() + tileHandling.getChildren().get(5).getLayoutX());
-                            this.setLayoutY(tileHandling.getLayoutY() + tileHandling.getChildren().get(5).getLayoutY());
-                        }
-                        else{
+                        } else {
                             this.setLayoutX(initialX);
                             this.setLayoutY(initialY);
                         }
-                    }
-                    else if (Metro.isPlacementSequenceValid(possiblePlacement)) {
+                    } else if (closestDistance > 2 * SQUARE_SIZE && playerArrayList.get(indexOfPlayersTurn).isHolding()) {
+                        if (this == tileInHandImages.get(indexOfPlayersTurn)) {
+                            this.setLayoutX(tileHandling.getLayoutX() + tileHandling.getChildren().get(5).getLayoutX());
+                            this.setLayoutY(tileHandling.getLayoutY() + tileHandling.getChildren().get(5).getLayoutY());
+                        } else {
+                            this.setLayoutX(initialX);
+                            this.setLayoutY(initialY);
+                        }
+                    } else if (Metro.isPlacementSequenceValid(possiblePlacement)) {
                         this.setLayoutX(closest.getLayoutX() + emptyBoard.getLayoutX());
                         this.setLayoutY(closest.getLayoutY() + emptyBoard.getLayoutY());
                         placementSequence.append(tileType).append(row).append(column);
@@ -140,14 +137,15 @@ public class Game extends Application {
                         emptyBoardSquares.remove(closest);
                         deck.remove(0);
                         updateScoreBoard(placementSequence.toString());
-                        if(this == tileInHandImages.get(indexOfPlayersTurn))
+                        if (this == tileInHandImages.get(indexOfPlayersTurn)){
                             playerArrayList.get(indexOfPlayersTurn).updateTileHolding("");
-                        if(indexOfPlayersTurn==playerArrayList.size()-1)
+                            tileInHandImages.put(indexOfPlayersTurn, null);
+                        }
+                        if (indexOfPlayersTurn == playerArrayList.size() - 1)
                             indexOfPlayersTurn = 0;
                         else indexOfPlayersTurn++;
                         updateTileHandling();
-                    }
-                    else if (isCardShowing){
+                    } else if (isCardShowing) {
                         this.setLayoutX(initialX);
                         this.setLayoutY(initialY);
                     }
@@ -246,23 +244,28 @@ public class Game extends Application {
     /**
      * function to update the player name in tile handling VBox
      */
-    private void updateTileHandling(){
-        Text turnOf = new Text(playerArrayList.get(indexOfPlayersTurn).getName() +"'s turn");
+    private void updateTileHandling() {
+        Text turnOf = new Text(playerArrayList.get(indexOfPlayersTurn).getName() + "'s turn");
         turnOf.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 20));
-        tileHandling.getChildren().set(0,turnOf);
+        tileHandling.getChildren().set(0, turnOf);
         int previousPlayer = indexOfPlayersTurn - 1;
-        if(indexOfPlayersTurn==0)
-            previousPlayer = numberOfPlayers-1;
-        if(playerArrayList.get(previousPlayer).isHolding())
+        if (indexOfPlayersTurn == 0)
+            previousPlayer = numberOfPlayers - 1;
+        if (playerArrayList.get(previousPlayer).isHolding())
             root.getChildren().remove(tileInHandImages.get(previousPlayer));
 
-        if(playerArrayList.get(indexOfPlayersTurn).isHolding()) {
-            root.getChildren().add(tileInHandImages.get(indexOfPlayersTurn));
-            tileInHandImages.get(indexOfPlayersTurn).isDraggable = true;
+        if (indexOfPlayersTurn < numberOfHumanPlayers) {
+            if (playerArrayList.get(indexOfPlayersTurn).isHolding()) {
+                root.getChildren().add(tileInHandImages.get(indexOfPlayersTurn));
+                tileInHandImages.get(indexOfPlayersTurn).isDraggable = true;
+            } else autoDraw();
         }
-        else autoDraw();
-
+        //if this player is a computer, make a move
+        else {
+            makeComputerMove();
+        }
     }
+
     /**
      * first function called to et player info, in turn calls
      * getComputerPlayer to find computer opponents
@@ -302,7 +305,7 @@ public class Game extends Application {
 
         Optional<Integer> result = dialog.showAndWait();
         if (result.isPresent()) {
-            if (numberOfHumanPlayers + result.get() > 6 ||numberOfHumanPlayers + result.get() < 2) {
+            if (numberOfHumanPlayers + result.get() > 6 || numberOfHumanPlayers + result.get() < 2) {
                 playerCountError();
             } else {
                 numberOfComputerPlayers = result.get();
@@ -435,10 +438,10 @@ public class Game extends Application {
         root.getChildren().add(scoreBoard);
     }
 
-    private void initializeTileHandling(){
+    private void initializeTileHandling() {
         Rectangle emptyFaceUpDeck = new Rectangle();
         Rectangle emptyTileInHand = new Rectangle();
-        Text turnOf = new Text(playerArrayList.get(indexOfPlayersTurn).getName() +"'s turn");
+        Text turnOf = new Text(playerArrayList.get(indexOfPlayersTurn).getName() + "'s turn");
         turnOf.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 20));
         Text deckHeading = new Text("Deck");
         deckHeading.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 15));
@@ -453,9 +456,9 @@ public class Game extends Application {
         Button draw = new Button("Let's Go!!!");
         //autoDraw();
         draw.setOnAction(actionEvent -> {
-            if(deck.size()!=0 && !isCardShowing) {
+            if (deck.size() != 0 && !isCardShowing) {
                 String tileType = deck.get(0);
-                DraggableImage draggableImage = new DraggableImage(SQUARE_SIZE,tileType,tileHandling.getLayoutX() + tileHandling.getChildren().get(2).getLayoutX(),tileHandling.getLayoutY() + tileHandling.getChildren().get(2).getLayoutY());
+                DraggableImage draggableImage = new DraggableImage(SQUARE_SIZE, tileType, tileHandling.getLayoutX() + tileHandling.getChildren().get(2).getLayoutX(), tileHandling.getLayoutY() + tileHandling.getChildren().get(2).getLayoutY());
                 root.getChildren().add(draggableImage);
                 isCardShowing = true;
             }
@@ -473,19 +476,142 @@ public class Game extends Application {
         root.getChildren().add(tileHandling);
     }
 
-    private void autoDraw(){
+    /**
+     * function for auto drawing from deck if no tile in hand
+     * ond when tile is place in hand
+     */
+    private void autoDraw() {
         String tileType = deck.get(0);
-        DraggableImage draggableImage = new DraggableImage(SQUARE_SIZE,tileType,tileHandling.getLayoutX() + tileHandling.getChildren().get(2).getLayoutX(),tileHandling.getLayoutY() + tileHandling.getChildren().get(2).getLayoutY());
+        DraggableImage draggableImage = new DraggableImage(SQUARE_SIZE, tileType, tileHandling.getLayoutX() + tileHandling.getChildren().get(2).getLayoutX(), tileHandling.getLayoutY() + tileHandling.getChildren().get(2).getLayoutY());
         root.getChildren().add(draggableImage);
         isCardShowing = true;
     }
 
     /**
+     * function for making/showing a computer move
+     * draggable property of images is  set to off so that humans may not cause any interference
+     */
+    private void makeComputerMove() {
+        //if computer player has a in hand card
+        if (playerArrayList.get(indexOfPlayersTurn).isHolding()) {
+            //adding the tile at tile in hand location
+            root.getChildren().add(tileInHandImages.get(indexOfPlayersTurn));
+            tileInHandImages.get(indexOfPlayersTurn).isDraggable = false;
+            //adding some time delay
+//            delayForMillis(1000);
+            //if we draw and play this card
+            if(Metro.shouldDraw(placementSequence.toString(),playerArrayList.get(indexOfPlayersTurn).getTileInHand())){
+                //draw
+                String tileType = deck.get(0);
+                DraggableImage draggableImage = new DraggableImage(SQUARE_SIZE, tileType, tileHandling.getLayoutX() + tileHandling.getChildren().get(2).getLayoutX(), tileHandling.getLayoutY() + tileHandling.getChildren().get(2).getLayoutY());
+                draggableImage.isDraggable = false;
+                root.getChildren().add(draggableImage);
+                //adding some time delay
+//                delayForMillis(2000);
+                //play
+                String piecePlacement = Metro.generateMove(placementSequence.toString(), tileType, numberOfPlayers);
+                int row = piecePlacement.charAt(4) - '0';
+                int column  = piecePlacement.charAt(5) - '0';
+                draggableImage.setLayoutX(emptyBoard.getLayoutX() + SQUARE_SIZE*row);
+                draggableImage.setLayoutY(emptyBoard.getLayoutY() + SQUARE_SIZE*column);
+                //update the deck
+                deck.remove(0);
+                //update the placement sequence
+                placementSequence.append(piecePlacement);
+
+            }
+            //if we don't draw and play the in hand card
+            else {
+                String piecePlacement = Metro.generateMove(placementSequence.toString(),playerArrayList.get(indexOfPlayersTurn).getTileInHand(),numberOfPlayers);
+                int row = piecePlacement.charAt(4) - '0';
+                int column  = piecePlacement.charAt(5) - '0';
+                tileInHandImages.get(indexOfPlayersTurn).setLayoutX(emptyBoard.getLayoutX() + SQUARE_SIZE*row);
+                tileInHandImages.get(indexOfPlayersTurn).setLayoutY(emptyBoard.getLayoutY() + SQUARE_SIZE*column);
+                //update players info and the hash map
+                playerArrayList.get(indexOfPlayersTurn).updateTileHolding("");
+                tileInHandImages.put(indexOfPlayersTurn, null);
+                //updating placement Sequence
+                placementSequence.append(piecePlacement);
+            }
+        }
+        //if computer player doesn't have a in hand card
+        else {
+            //have to draw
+            String tileType = deck.get(0);
+            DraggableImage draggableImage = new DraggableImage(SQUARE_SIZE, tileType, tileHandling.getLayoutX() + tileHandling.getChildren().get(2).getLayoutX(), tileHandling.getLayoutY() + tileHandling.getChildren().get(2).getLayoutY());
+            draggableImage.isDraggable = false;
+            root.getChildren().add(draggableImage);
+            //adding some time delay
+//            delayForMillis(2000);
+            //if we keep this in hand and then draw a new one and play that one
+            if(Metro.shouldKeepInHand(placementSequence.toString(),tileType)){
+                //update deck, player info and hash map
+                deck.remove(0);
+                playerArrayList.get(indexOfPlayersTurn).updateTileHolding(tileType);
+                tileInHandImages.put(indexOfPlayersTurn,draggableImage);
+                //position this one in the tile in hand place
+                draggableImage.setLayoutX(tileHandling.getLayoutX()+tileHandling.getChildren().get(5).getLayoutX());
+                draggableImage.setLayoutY(tileHandling.getLayoutY()+tileHandling.getChildren().get(5).getLayoutY());
+                //adding some time delay
+//                delayForMillis(2000);
+                //draw another one and play
+                String tileType1 = deck.get(0);
+                DraggableImage draggableImage1 = new DraggableImage(SQUARE_SIZE, tileType1, tileHandling.getLayoutX() + tileHandling.getChildren().get(2).getLayoutX(), tileHandling.getLayoutY() + tileHandling.getChildren().get(2).getLayoutY());
+                draggableImage1.isDraggable = false;
+                root.getChildren().add(draggableImage1);
+                String piecePlacement = Metro.generateMove(placementSequence.toString(), tileType1, numberOfPlayers);
+                int row = piecePlacement.charAt(4) - '0';
+                int column  = piecePlacement.charAt(5) - '0';
+                draggableImage1.setLayoutX(emptyBoard.getLayoutX() + SQUARE_SIZE*row);
+                draggableImage1.setLayoutY(emptyBoard.getLayoutY() + SQUARE_SIZE*column);
+                //update the deck
+                deck.remove(0);
+                //update the placement sequence
+                placementSequence.append(piecePlacement);
+            }
+            //if we play this card
+            else {
+                String piecePlacement = Metro.generateMove(placementSequence.toString(), tileType, numberOfPlayers);
+                int row = piecePlacement.charAt(4) - '0';
+                int column  = piecePlacement.charAt(5) - '0';
+                draggableImage.setLayoutX(emptyBoard.getLayoutX() + SQUARE_SIZE*row);
+                draggableImage.setLayoutY(emptyBoard.getLayoutY() + SQUARE_SIZE*column);
+                //update the deck
+                deck.remove(0);
+                //update the placement sequence
+                placementSequence.append(piecePlacement);
+            }
+        }
+        //adding some time delay
+//        delayForMillis(2000);
+        //update the player turn index
+        if(indexOfPlayersTurn==numberOfPlayers-1)
+            indexOfPlayersTurn=0;
+        else
+            indexOfPlayersTurn++;
+        updateTileHandling();
+    }
+
+    /**
+     * adding a delay method
+     */
+    private void delayForMillis(long time){
+        //adding some time delay
+        try
+        {
+            Thread.sleep(time);
+        }
+        catch(InterruptedException ex)
+        {
+            Thread.currentThread().interrupt();
+        }
+    }
+    /**
      * during restart, clean up the nodes
      * or make a new instance...
      * how to do?
      */
-    private void clearAll(){
+    private void clearAll() {
 
     }
 
