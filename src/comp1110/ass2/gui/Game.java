@@ -146,8 +146,14 @@ public class Game extends Application {
                         else indexOfPlayersTurn++;
                         updateTileHandling();
                     } else if (isCardShowing) {
+                        //snap back to the deck position
                         this.setLayoutX(initialX);
                         this.setLayoutY(initialY);
+                    }
+                    else if(this == tileInHandImages.get(indexOfPlayersTurn)){
+                        //snap back to the tile in hand position
+                        this.setLayoutX(tileHandling.getLayoutX() + tileHandling.getChildren().get(5).getLayoutX());
+                        this.setLayoutY(tileHandling.getLayoutY() +tileHandling.getChildren().get(5).getLayoutY());
                     }
                     highlighted.setFill(Color.LIGHTGRAY);
                     highlighted = null;
