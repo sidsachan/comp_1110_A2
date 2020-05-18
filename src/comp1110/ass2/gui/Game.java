@@ -2,6 +2,7 @@ package comp1110.ass2.gui;
 
 import comp1110.ass2.Metro;
 import comp1110.ass2.Player;
+import javafx.animation.PathTransition;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -16,15 +17,15 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 public class Game extends Application {
     private static final int SQUARE_SIZE = 70;
@@ -137,7 +138,7 @@ public class Game extends Application {
                         emptyBoardSquares.remove(closest);
                         deck.remove(0);
                         updateScoreBoard(placementSequence.toString());
-                        if (this == tileInHandImages.get(indexOfPlayersTurn)){
+                        if (this == tileInHandImages.get(indexOfPlayersTurn)) {
                             playerArrayList.get(indexOfPlayersTurn).updateTileHolding("");
                             tileInHandImages.put(indexOfPlayersTurn, null);
                         }
@@ -149,8 +150,7 @@ public class Game extends Application {
                         //snap back to the deck position
                         this.setLayoutX(initialX);
                         this.setLayoutY(initialY);
-                    }
-                    else if(this == tileInHandImages.get(indexOfPlayersTurn)){
+                    } else if (this == tileInHandImages.get(indexOfPlayersTurn)) {
                         //snap back to the tile in hand position
                         this.setLayoutX(tileHandling.getLayoutX() + tileHandling.getChildren().get(5).getLayoutX());
                         this.setLayoutY(tileHandling.getLayoutY() + tileHandling.getChildren().get(5).getLayoutY());
@@ -161,12 +161,40 @@ public class Game extends Application {
             });
         }
 
-        public void moveImageWithoutTransition(String piecePlacement){
+        public void moveImageToBoardWithoutTransition(String piecePlacement) {
             int row = piecePlacement.charAt(4) - '0';
-            int column  = piecePlacement.charAt(5) - '0';
-            Rectangle r = findClosestRectangle(emptyBoard.getLayoutX() + SQUARE_SIZE*column,emptyBoard.getLayoutY() + SQUARE_SIZE*row);
+            int column = piecePlacement.charAt(5) - '0';
+            Rectangle r = findClosestRectangle(emptyBoard.getLayoutX() + SQUARE_SIZE * column, emptyBoard.getLayoutY() + SQUARE_SIZE * row);
             this.setLayoutX(emptyBoard.getLayoutX() + r.getLayoutX());
             this.setLayoutY(emptyBoard.getLayoutX() + r.getLayoutY());
+            //remove the rectangle from the empty board squares array list
+            emptyBoardSquares.remove(r);
+            //update the placement sequence
+            placementSequence.append(piecePlacement);
+        }
+
+        public void moveImageToBoardWithTransition(String piecePlacement) {
+            int row = piecePlacement.charAt(4) - '0';
+            int column = piecePlacement.charAt(5) - '0';
+            Rectangle r = findClosestRectangle(emptyBoard.getLayoutX() + SQUARE_SIZE * column, emptyBoard.getLayoutY() + SQUARE_SIZE * row);
+            double startX = SQUARE_SIZE / 2;
+            double startY = SQUARE_SIZE / 2;
+            double endX = (emptyBoard.getLayoutX() + r.getLayoutX()) - this.getLayoutX() + SQUARE_SIZE / 2;
+            double endY = (emptyBoard.getLayoutY() + r.getLayoutY()) - this.getLayoutY() + SQUARE_SIZE / 2;
+            //creating path
+            PathElement[] pathElement = {
+                    new MoveTo(startX, startY),
+                    new LineTo(endX, endY)
+            };
+            Path line = new Path();
+            line.getElements().addAll(pathElement);
+            //path transition animation
+            PathTransition travel = new PathTransition();
+            travel.setNode(this);
+            travel.setPath(line);
+            travel.setDuration(new Duration(2000));
+            travel.setCycleCount(1);
+            travel.play();
             //remove the rectangle from the empty board squares array list
             emptyBoardSquares.remove(r);
             //update the placement sequence
@@ -263,7 +291,7 @@ public class Game extends Application {
      * function to update the player name in tile handling VBox
      */
     private void updateTileHandling() {
-        if(emptyBoardSquares.size()>0) {
+        if (emptyBoardSquares.size() > 0) {
             Text turnOf = new Text(playerArrayList.get(indexOfPlayersTurn).getName() + "'s turn");
             turnOf.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 20));
             tileHandling.getChildren().set(0, turnOf);
@@ -520,7 +548,7 @@ public class Game extends Application {
             //adding some time delay
 //            delayForMillis(1000);
             //if we draw and play this card
-            if(Metro.shouldDraw(placementSequence.toString(),playerArrayList.get(indexOfPlayersTurn).getTileInHand())){
+            if (Metro.shouldDraw(placementSequence.toString(), playerArrayList.get(indexOfPlayersTurn).getTileInHand())) {
                 //draw
                 String tileType = deck.get(0);
                 DraggableImage draggableImage = new DraggableImage(SQUARE_SIZE, tileType, tileHandling.getLayoutX() + tileHandling.getChildren().get(2).getLayoutX(), tileHandling.getLayoutY() + tileHandling.getChildren().get(2).getLayoutY());
@@ -530,14 +558,14 @@ public class Game extends Application {
 //                delayForMillis(2000);
                 //play
                 String piecePlacement = Metro.generateMove(placementSequence.toString(), tileType, numberOfPlayers);
-                draggableImage.moveImageWithoutTransition(piecePlacement);
+                draggableImage.moveImageToBoardWithoutTransition(piecePlacement);
                 //update the deck and empty board
                 deck.remove(0);
             }
             //if we don't draw and play the in hand card
             else {
-                String piecePlacement = Metro.generateMove(placementSequence.toString(),playerArrayList.get(indexOfPlayersTurn).getTileInHand(),numberOfPlayers);
-                tileInHandImages.get(indexOfPlayersTurn).moveImageWithoutTransition(piecePlacement);
+                String piecePlacement = Metro.generateMove(placementSequence.toString(), playerArrayList.get(indexOfPlayersTurn).getTileInHand(), numberOfPlayers);
+                tileInHandImages.get(indexOfPlayersTurn).moveImageToBoardWithoutTransition(piecePlacement);
                 //update players info and the hash map
                 playerArrayList.get(indexOfPlayersTurn).updateTileHolding("");
                 tileInHandImages.put(indexOfPlayersTurn, null);
@@ -553,14 +581,14 @@ public class Game extends Application {
             //adding some time delay
 //            delayForMillis(2000);
             //if we keep this in hand and then draw a new one and play that one
-            if(Metro.shouldKeepInHand(placementSequence.toString(),tileType)){
+            if (Metro.shouldKeepInHand(placementSequence.toString(), tileType)) {
                 //update deck, player info and hash map
                 deck.remove(0);
                 playerArrayList.get(indexOfPlayersTurn).updateTileHolding(tileType);
-                tileInHandImages.put(indexOfPlayersTurn,draggableImage);
+                tileInHandImages.put(indexOfPlayersTurn, draggableImage);
                 //position this one in the tile in hand place
-                draggableImage.setLayoutX(tileHandling.getLayoutX()+tileHandling.getChildren().get(5).getLayoutX());
-                draggableImage.setLayoutY(tileHandling.getLayoutY()+tileHandling.getChildren().get(5).getLayoutY());
+                draggableImage.setLayoutX(tileHandling.getLayoutX() + tileHandling.getChildren().get(5).getLayoutX());
+                draggableImage.setLayoutY(tileHandling.getLayoutY() + tileHandling.getChildren().get(5).getLayoutY());
                 //adding some time delay
 //                delayForMillis(2000);
                 //draw another one and play
@@ -569,23 +597,24 @@ public class Game extends Application {
                 draggableImage1.isDraggable = false;
                 root.getChildren().add(draggableImage1);
                 String piecePlacement = Metro.generateMove(placementSequence.toString(), tileType1, numberOfPlayers);
-                draggableImage1.moveImageWithoutTransition(piecePlacement);
+                draggableImage1.moveImageToBoardWithoutTransition(piecePlacement);
                 //update the deck
                 deck.remove(0);
             }
             //if we play this card
             else {
                 String piecePlacement = Metro.generateMove(placementSequence.toString(), tileType, numberOfPlayers);
-                draggableImage.moveImageWithoutTransition(piecePlacement);
+                //draggableImage.moveImageToBoardWithoutTransition(piecePlacement);
+                draggableImage.moveImageToBoardWithTransition(piecePlacement);
                 //update the deck and empty board
                 deck.remove(0);
-                }
+            }
         }
         //adding some time delay
 //        delayForMillis(2000);
         //update the player turn index
-        if(indexOfPlayersTurn==numberOfPlayers-1)
-            indexOfPlayersTurn=0;
+        if (indexOfPlayersTurn == numberOfPlayers - 1)
+            indexOfPlayersTurn = 0;
         else
             indexOfPlayersTurn++;
         updateTileHandling();
@@ -594,17 +623,15 @@ public class Game extends Application {
     /**
      * adding a delay method
      */
-    private void delayForMillis(long time){
+    private void delayForMillis(long time) {
         //adding some time delay
-        try
-        {
+        try {
             Thread.sleep(time);
-        }
-        catch(InterruptedException ex)
-        {
+        } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
         }
     }
+
     /**
      * during restart, clean up the nodes
      * or make a new instance...
