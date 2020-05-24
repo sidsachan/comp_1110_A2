@@ -83,22 +83,16 @@ public class Game extends Application {
             this.setLayoutY(initialY);
             // press the
             this.setOnMousePressed(event -> {
-                String imageName=this.getImage().getUrl().split("/")[this.getImage().getUrl().split("/").length-1].substring(0,4);
-
-
                 if (isDraggable) {
                     mouseXOffset = this.getLayoutX() - event.getSceneX();
                     mouseYOffset = this.getLayoutY() - event.getSceneY();
                 }
             });
 
-//鼠标拖动 tile
             this.setOnMouseDragged(event -> {
-
                 if (isDraggable) {
                     this.setLayoutX(event.getSceneX() + mouseXOffset);
                     this.setLayoutY(event.getSceneY() + mouseYOffset);
-
                     Rectangle closest = findClosestRectangle(this.getLayoutX(), this.getLayoutY());
 
                     if (highlighted != null) {
@@ -111,19 +105,16 @@ public class Game extends Application {
                     double closestDistance = distanceToRectangle(closest, this.getLayoutX(), this.getLayoutY());
 
                     if (closestDistance > 2 * SQUARE_SIZE) {
-                        System.out.println(closestDistance);
+                        //System.out.println(closestDistance);
                     } else if (Metro.isPlacementSequenceValid(possiblePlacement)) {
                         closest.setFill(Color.GREEN);
                     } else {
                         closest.setFill(Color.RED);
                     }
-
-                highlighted = closest;
-            }
+                    highlighted = closest;
+                }
             });
 
-
-        //
             this.setOnMouseReleased(event -> {
                 if (emptyBoardSquares.size() > 0 && isDraggable) {
                     Rectangle closest = findClosestRectangle(this.getLayoutX(), this.getLayoutY());
@@ -186,7 +177,7 @@ public class Game extends Application {
                         this.setLayoutY(tileHandling.getLayoutY() + tileHandling.getChildren().get(5).getLayoutY());
                     }
 
-//                    highlighted.setFill(Color.LIGHTGRAY);
+                    highlighted.setFill(Color.LIGHTGRAY);
                     highlighted = null;
                 }
             });
@@ -236,7 +227,6 @@ public class Game extends Application {
     }
 
 
-
     /**
      * @param r the rectangle
      * @param x x coordinate of the point
@@ -280,25 +270,31 @@ public class Game extends Application {
     private void makeControls() {
         Label l1 = new Label("Difficulty");
         Slider slider = new Slider();
-        slider.setMin(0);
-        slider.setMax(100);
-        slider.setValue(40);
-        updateComputerDifficult((int) slider.getValue());
+        slider.setMin(1);
+        slider.setMax(5);
+        slider.setValue(3);
+        slider.setMajorTickUnit(1);
+        slider.setMinorTickCount(0);
+        slider.setSnapToTicks(true);
+        slider.setShowTickMarks(true);
+        slider.setShowTickLabels(true);
+       // updateComputerDifficult((int) slider.getValue());
         Button st = new Button("START");
         Button rs = new Button("RESTART");
-                    st.setOnAction(event -> {
-                        Alert start = new Alert(Alert.AlertType.INFORMATION);
-                        start.setTitle("Game Start");
-                        start.setHeaderText(null);
-                        start.setContentText("Degree of Difficulty： "+(int)slider.getValue());
-                        start.showAndWait();
-            if (stations.getChildren().size()==0){
+
+        st.setOnAction(event -> {
+            Alert start = new Alert(Alert.AlertType.INFORMATION);
+            start.setTitle("Game Start");
+            start.setHeaderText(null);
+            start.setContentText("Degree of Difficulty： " + slider.getValue());
+            start.showAndWait();
+            if (stations.getChildren().size() == 0) {
                 showEmptyBoard();
                 getPlayerInfo();
                 initiateScoreBoard();
                 deck = Metro.getFreshDeck();
                 initializeTileHandling();
-            }else{
+            } else {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Game Start");
                 alert.setHeaderText("Game fun for you!");
@@ -307,11 +303,13 @@ public class Game extends Application {
             }
 
         });
-                    rs.setOnAction(event ->{
-                        clearAll();
-                    } );
+
+        rs.setOnAction(event -> {
+            clearAll();
+        });
+
         HBox bottomControls = new HBox();
-        bottomControls.getChildren().addAll(l1, slider, st,rs);
+        bottomControls.getChildren().addAll(l1, slider, st, rs);
         bottomControls.setLayoutX(100);
         bottomControls.setLayoutY(VIEWER_HEIGHT - 50);
         bottomControls.setSpacing(30);
@@ -325,7 +323,7 @@ public class Game extends Application {
 
         Viewer.showStations(stations);
 
-            root.getChildren().add(stations);
+        root.getChildren().add(stations);
 
         //making light gray rectangles for the empty positions on the board
         for (int i = 0; i < DIM; i++) {
@@ -348,7 +346,7 @@ public class Game extends Application {
         //emptyBoard.setGridLinesVisible(true);
         emptyBoard.setLayoutX(SQUARE_SIZE);
         emptyBoard.setLayoutY(SQUARE_SIZE);
-            root.getChildren().add(emptyBoard);
+        root.getChildren().add(emptyBoard);
     }
 
     /**
@@ -391,7 +389,6 @@ public class Game extends Application {
      * first function called to et player info, in turn calls
      * getComputerPlayer to find computer opponents
      */
-
     private void getPlayerInfo() {
         Integer[] playerCountData = {1, 2, 3, 4, 5, 6};
         List<Integer> playerCount;
@@ -407,8 +404,8 @@ public class Game extends Application {
         if (result.isPresent()) {
             numberOfHumanPlayers = result.get();
             getComputerPlayers();
-        }else{
-         System.exit(0);
+        } else {
+            System.exit(0);
         }
     }
 
@@ -417,7 +414,6 @@ public class Game extends Application {
      * if total number of players>6, then calls error dialog box
      * otherwise take in the name of players
      */
-//选择电脑玩家
     private void getComputerPlayers() {
         Integer[] computerPlayerCountData = {0, 1, 2, 3, 4, 5};
         List<Integer> computerPlayerCount;
@@ -574,7 +570,9 @@ public class Game extends Application {
         root.getChildren().add(scoreBoard);
     }
 
-//初始化  tile 面板
+    /**
+     * a function to initialize tile panel
+     */
     private void initializeTileHandling() {
         Rectangle emptyFaceUpDeck = new Rectangle();
         Rectangle emptyTileInHand = new Rectangle();
@@ -591,7 +589,7 @@ public class Game extends Application {
         emptyFaceUpDeck.setArcWidth(3);
         emptyFaceUpDeck.setArcHeight(3);
         emptyFaceUpDeck.setFill(Color.LIGHTGRAY);
-        Button draw = new Button("Let's Go!!!");
+        Button draw = new Button("Draw");
         //autoDraw();
         draw.setOnAction(actionEvent -> {
             if (deck.size() != 0 && !isCardShowing) {
@@ -600,7 +598,7 @@ public class Game extends Application {
                         new DraggableImage(SQUARE_SIZE, tileType, tileHandling.getLayoutX() + tileHandling.getChildren().get(2).getLayoutX(), tileHandling.getLayoutY() + tileHandling.getChildren().get(2).getLayoutY());
                 root.getChildren().add(draggableImage);
                 isCardShowing = true;
-            }else {
+            } else {
                 //game over
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Game  Over");
@@ -725,41 +723,47 @@ public class Game extends Application {
         updateTileHandling();
     }
 
-
-        /**
-         * adding a delay method
-         */
-        private void delayForMillis(long time) {
-            //adding some time delay
-            try {
-                Thread.sleep(time);
-            } catch (InterruptedException ex) {
-                Thread.currentThread().interrupt();
-            }
+    /**
+     * adding a delay method
+     */
+    private void delayForMillis(long time) {
+        //adding some time delay
+        try {
+            Thread.sleep(time);
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
         }
+    }
 
-        /**
-         * during restart, clean up the nodes
-         * or make a new instance...
-         * how to do?
-         */
-        //清除 面板所有组件
-        private void clearAll() {
-            root.getChildren().clear();
-            makeControls();
-            root.getChildren().add(controls);
-           stations.getChildren().clear();
-           scoreBoard.getChildren().clear();
-           emptyBoard.getChildren().clear();
-           this.isCardShowing=false;
-           tileHandling.getChildren().clear();
+    /**
+     * during restart, clean up the nodes
+     */
+    //清除 面板所有组件
+    private void clearAll() {
+        root.getChildren().clear();
+        controls.getChildren().clear();
+        stations.getChildren().clear();
+        scoreBoard.getChildren().clear();
+        emptyBoard.getChildren().clear();
+        nameAndScore.getChildren().clear();
+        tileHandling.getChildren().clear();
+
+        tileInHandImages = new HashMap<>();
+        this.isCardShowing = false;
+        placementSequence = new StringBuilder();
+        playerArrayList = new ArrayList<>();
+        deck = new ArrayList<>();
+        highlighted = null;
+        emptyBoardSquares = new ArrayList<>();
+        indexOfPlayersTurn = 0;
+
+        makeControls();
+        root.getChildren().add(controls);
     }
 
     /**
      * function to update the text belonging to nameAndScore grid pane in the scoreBoard group.
      */
-
-    //更新分数榜单
     private void updateScoreBoard(String placementSequence) {
         //get updated player list
         Metro.assignScore(placementSequence, playerArrayList);
@@ -778,35 +782,34 @@ public class Game extends Application {
     }
 
 
-     private void updateComputerDifficult(int diffcultyValue){
+    private void updateComputerDifficult(int difficultyValue) {
 
-         HashMap<Integer,Player>  playerHashMap=new HashMap<>();
-         playerHashMap.put(diffcultyValue,new Player());
-         Tile[] start = Tile.getStartingTiles();
-         ArrayList<String > deck = new ArrayList<>();
-         for (Tile tile : start) {
-             for (int i = 0; i < tile.getNumber();++i) {
-                 String type = tile.getType();
-                 deck.add(type);
-             }
-         }
-         Board[] startBoard = Board.getStartBoard();
-         List<Board> board = new ArrayList<>(Arrays.asList(startBoard));
+        HashMap<Integer, Player> playerHashMap = new HashMap<>();
+        playerHashMap.put(difficultyValue, new Player());
+        Tile[] start = Tile.getStartingTiles();
+        ArrayList<String> deck = new ArrayList<>();
+        for (Tile tile : start) {
+            for (int i = 0; i < tile.getNumber(); ++i) {
+                String type = tile.getType();
+                deck.add(type);
+            }
+        }
+        Board[] startBoard = Board.getStartBoard();
+        List<Board> board = new ArrayList<>(Arrays.asList(startBoard));
 
-         for(int i=4;i<placementSequence.length();i+=6) {
-             String position = placementSequence.substring(i, i + 2);
+        for (int i = 4; i < placementSequence.length(); i += 6) {
+            String position = placementSequence.substring(i, i + 2);
 
-             for (int j = 0; j < board.size(); j++) {
-                 String name = board.get(j).getName();
-                 if (name.equals(position)) {
-                     board.remove(j);
-                 }
-             }
-         }
-     }
+            for (int j = 0; j < board.size(); j++) {
+                String name = board.get(j).getName();
+                if (name.equals(position)) {
+                    board.remove(j);
+                }
+            }
+        }
+    }
 
-
-//程序启动
+    //程序启动
     @Override
     public void start(Stage primaryStage) throws Exception {
         primaryStage.setTitle("Metro Game");
