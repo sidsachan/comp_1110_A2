@@ -63,7 +63,7 @@ public class Player {
      */
 
     public  boolean isHolding(){
-        if("".equals(this.tileInHand)) {
+        if(this.tileInHand.equals("")) {
             return false;
         }
         return true;
