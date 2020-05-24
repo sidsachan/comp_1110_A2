@@ -6,6 +6,7 @@ import comp1110.ass2.Player;
 import comp1110.ass2.Tile;
 import javafx.animation.PathTransition;
 import javafx.application.Application;
+import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -42,7 +43,7 @@ public class Game extends Application {
     private final Group root = new Group();
     private final Group controls = new Group();
     private final Group scoreBoard = new Group();
-    private final GridPane emptyBoard = new GridPane();
+    private final Group emptyBoard = new Group();
     private final Group stations = new Group();
     private final GridPane nameAndScore = new GridPane();
     private final VBox tileHandling = new VBox();
@@ -99,8 +100,8 @@ public class Game extends Application {
                         highlighted.setFill(Color.LIGHTGRAY);
                     }
 
-                    int row = GridPane.getRowIndex(closest);
-                    int column = GridPane.getColumnIndex(closest);
+                    int row = (int)closest.getLayoutY()/SQUARE_SIZE;
+                    int column = (int)closest.getLayoutX()/SQUARE_SIZE;
                     String possiblePlacement = placementSequence + tileType + row + column;
                     double closestDistance = distanceToRectangle(closest, this.getLayoutX(), this.getLayoutY());
 
@@ -118,8 +119,8 @@ public class Game extends Application {
             this.setOnMouseReleased(event -> {
                 if (emptyBoardSquares.size() > 0 && isDraggable) {
                     Rectangle closest = findClosestRectangle(this.getLayoutX(), this.getLayoutY());
-                    int row = GridPane.getRowIndex(closest);
-                    int column = GridPane.getColumnIndex(closest);
+                    int row = (int)closest.getLayoutY()/SQUARE_SIZE;
+                    int column = (int)closest.getLayoutX()/SQUARE_SIZE;
                     String possiblePlacement = placementSequence + tileType + row + column;
                     double closestDistance = distanceToRectangle(closest, this.getLayoutX(), this.getLayoutY());
 
@@ -155,12 +156,16 @@ public class Game extends Application {
                         this.isDraggable = false;
                         isCardShowing = false;
                         emptyBoardSquares.remove(closest);
-                        deck.remove(0);
+
                         updateScoreBoard(placementSequence.toString());
                         if (this == tileInHandImages.get(indexOfPlayersTurn)) {
                             playerArrayList.get(indexOfPlayersTurn).updateTileHolding("");
                             tileInHandImages.put(indexOfPlayersTurn, null);
                         }
+                        else {
+                            deck.remove(0);
+                        }
+
                         if (indexOfPlayersTurn == playerArrayList.size() - 1) {
                             indexOfPlayersTurn = 0;
                         } else {
@@ -216,9 +221,10 @@ public class Game extends Application {
             PathTransition travel = new PathTransition();
             travel.setNode(this);
             travel.setPath(line);
-            travel.setDuration(new Duration(2000));
+            travel.setDuration(new Duration(1500));
             travel.setCycleCount(1);
             travel.play();
+
             //remove the rectangle from the empty board squares array list
             emptyBoardSquares.remove(r);
             //update the placement sequence
@@ -332,7 +338,6 @@ public class Game extends Application {
                 if ((i == 3 || i == 4) && (j == 3 || j == 4)) {
                     continue;
                 }
-
                 Rectangle r = new Rectangle();
                 r.setWidth(SQUARE_SIZE);
                 r.setHeight(SQUARE_SIZE);
@@ -340,7 +345,9 @@ public class Game extends Application {
                 r.setArcHeight(3);
                 r.setFill(Color.LIGHTGRAY);
                 emptyBoardSquares.add(r);
-                emptyBoard.add(r, i, j);
+                r.setLayoutX(i*SQUARE_SIZE);
+                r.setLayoutY(j*SQUARE_SIZE);
+                emptyBoard.getChildren().add(r);
             }
         }
         //emptyBoard.setGridLinesVisible(true);
@@ -379,7 +386,18 @@ public class Game extends Application {
             }
             //if this player is a computer, make a move
             else {
-                makeComputerMove();
+                Task<Void> sleeper = new Task<>() {
+                    @Override
+                    protected Void call() {
+                        try {
+                            Thread.sleep(2000);
+                        } catch (InterruptedException ignored) {
+                        }
+                        return null;
+                    }
+                };
+                sleeper.setOnSucceeded(event -> makeComputerMove());
+                new Thread(sleeper).start();
             }
 
         }
@@ -592,12 +610,16 @@ public class Game extends Application {
         Button draw = new Button("Draw");
         //autoDraw();
         draw.setOnAction(actionEvent -> {
-            if (deck.size() != 0 && !isCardShowing) {
+            if (deck.size() != 0 && !isCardShowing && (indexOfPlayersTurn<numberOfHumanPlayers)) {
                 String tileType = deck.get(0);
                 DraggableImage draggableImage =
                         new DraggableImage(SQUARE_SIZE, tileType, tileHandling.getLayoutX() + tileHandling.getChildren().get(2).getLayoutX(), tileHandling.getLayoutY() + tileHandling.getChildren().get(2).getLayoutY());
                 root.getChildren().add(draggableImage);
                 isCardShowing = true;
+                //if you have tile in hand and draw, the draggability of tile in hand is gone
+                if(playerArrayList.get(indexOfPlayersTurn).isHolding()){
+                    tileInHandImages.get(indexOfPlayersTurn).isDraggable = false;
+                }
             } else {
                 //game over
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -640,15 +662,13 @@ public class Game extends Application {
      */
 
     private void makeComputerMove() {
+
         //if computer player has a in hand card
         if (playerArrayList.get(indexOfPlayersTurn).isHolding()) {
             //adding the tile at tile in hand location
             root.getChildren().add(tileInHandImages.get(indexOfPlayersTurn));
             tileInHandImages.get(indexOfPlayersTurn).isDraggable = false;
-            //adding some time delay
-//            delayForMillis(1000);
             //if we draw and play this card
-
             if (Metro.shouldDraw(placementSequence.toString(), playerArrayList.get(indexOfPlayersTurn).getTileInHand())) {
                 //draw
                 String tileType = deck.get(0);
@@ -656,8 +676,6 @@ public class Game extends Application {
                 draggableImage.isDraggable = false;
 
                 root.getChildren().add(draggableImage);
-                //adding some time delay
-//                delayForMillis(2000);
                 //play
                 String piecePlacement = Metro.generateMove(placementSequence.toString(), tileType, numberOfPlayers);
                 draggableImage.moveImageToBoardWithoutTransition(piecePlacement);
@@ -678,10 +696,8 @@ public class Game extends Application {
             //have to draw
             String tileType = deck.get(0);
             DraggableImage draggableImage = new DraggableImage(SQUARE_SIZE, tileType, tileHandling.getLayoutX() + tileHandling.getChildren().get(2).getLayoutX(), tileHandling.getLayoutY() + tileHandling.getChildren().get(2).getLayoutY());
-            draggableImage.isDraggable = false;
+            draggableImage.isDraggable = false;         //human player should not be able to move this
             root.getChildren().add(draggableImage);
-            //adding some time delay
-//            delayForMillis(2000);
             //if we keep this in hand and then draw a new one and play that one
             if (Metro.shouldKeepInHand(placementSequence.toString(), tileType)) {
                 //update deck, player info and hash map
@@ -691,8 +707,6 @@ public class Game extends Application {
                 //position this one in the tile in hand place
                 draggableImage.setLayoutX(tileHandling.getLayoutX() + tileHandling.getChildren().get(5).getLayoutX());
                 draggableImage.setLayoutY(tileHandling.getLayoutY() + tileHandling.getChildren().get(5).getLayoutY());
-                //adding some time delay
-//                delayForMillis(2000);
                 //draw another one and play
                 String tileType1 = deck.get(0);
                 DraggableImage draggableImage1 = new DraggableImage(SQUARE_SIZE, tileType1, tileHandling.getLayoutX() + tileHandling.getChildren().get(2).getLayoutX(), tileHandling.getLayoutY() + tileHandling.getChildren().get(2).getLayoutY());
@@ -706,14 +720,12 @@ public class Game extends Application {
             //if we play this card
             else {
                 String piecePlacement = Metro.generateMove(placementSequence.toString(), tileType, numberOfPlayers);
-                //draggableImage.moveImageToBoardWithoutTransition(piecePlacement);
+                //playing
                 draggableImage.moveImageToBoardWithTransition(piecePlacement);
                 //update the deck and empty board
                 deck.remove(0);
             }
         }
-        //adding some time delay
-//        delayForMillis(2000);
         //update the player turn index
         if (indexOfPlayersTurn == numberOfPlayers - 1) {
             indexOfPlayersTurn = 0;
@@ -727,6 +739,7 @@ public class Game extends Application {
      * adding a delay method
      */
     private void delayForMillis(long time) {
+
         //adding some time delay
         try {
             Thread.sleep(time);
