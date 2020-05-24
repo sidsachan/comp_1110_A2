@@ -1,9 +1,13 @@
 package comp1110.ass2;
 
 public class Player {
+
     private String name;
     private int score;
     private String tileInHand;
+
+    public Player() {
+    }
 
     public Player(String name) {
         this.name = name;
@@ -17,6 +21,7 @@ public class Player {
      * Or reset it  to null, if player decides to play it on the board
      * @param tile A String representing the piece to be placed
      */
+
     public void updateTileHolding(String tile){
         this.tileInHand = tile;
     }
@@ -33,6 +38,7 @@ public class Player {
      * function to update the score of the player
      * @param score an int variable containing the updated score of the player
      */
+
     public void updateScore(int score){
         this.score = score;
     }
@@ -55,9 +61,11 @@ public class Player {
      * function to determine if tile is in hand
      * @return true if player has a tile  in hand, false otherwise
      */
+
     public  boolean isHolding(){
-        if(this.tileInHand=="")
+        if("".equals(this.tileInHand)) {
             return false;
+        }
         return true;
     }
 }

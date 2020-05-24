@@ -5,7 +5,9 @@ package comp1110.ass2;
  * TileType : type of the tile
  * TileState : state of the tile
  */
+
 public class Tile {
+
     private String type;
     private int number;
 
@@ -41,8 +43,9 @@ public class Tile {
                 new Tile("ddbc",2),
                 new Tile("dddd",2),
         };
+
         return startingTiles;
-    }
+}
 
     public void setNumber(int newNumber){
         this.number = newNumber;

@@ -1,7 +1,9 @@
 package comp1110.ass2.gui;
 
+import comp1110.ass2.Board;
 import comp1110.ass2.Metro;
 import comp1110.ass2.Player;
+import comp1110.ass2.Tile;
 import javafx.animation.PathTransition;
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -28,10 +30,13 @@ import javafx.util.Duration;
 import java.util.*;
 
 public class Game extends Application {
+
     private static final int SQUARE_SIZE = 70;
     private static final int VIEWER_WIDTH = 1024;
     private static final int VIEWER_HEIGHT = 768;
-    private static final int DIM = 8;           //board is 8 by 8
+
+    //board is 8 by 8
+    private static final int DIM = 8;
     private static final String URI_BASE = "assets/";
 
     private final Group root = new Group();
@@ -42,21 +47,28 @@ public class Game extends Application {
     private final GridPane nameAndScore = new GridPane();
     private final VBox tileHandling = new VBox();
 
+    //存放 computer 的 发牌记录
+//    private final HashMap<Integer>
     private int numberOfHumanPlayers;
     private int numberOfComputerPlayers;
     private int numberOfPlayers;
+    //玩家列表
     private ArrayList<Player> playerArrayList = new ArrayList<>();
     private ArrayList<String> deck = new ArrayList<>();
     private ArrayList<Rectangle> emptyBoardSquares = new ArrayList<>();
+
     private HashMap<Integer, DraggableImage> tileInHandImages = new HashMap<>();
+
     private Rectangle highlighted = null;
     private StringBuilder placementSequence = new StringBuilder();
+    //是否显示card
     private boolean isCardShowing = false;
     private int indexOfPlayersTurn = 0;
 
     /**
      * a class for making a draggable image
      */
+
     class DraggableImage extends ImageView {
         double mouseXOffset;
         double mouseYOffset;
@@ -69,36 +81,49 @@ public class Game extends Application {
             this.setFitHeight(size);
             this.setLayoutX(initialX);
             this.setLayoutY(initialY);
-
+            // press the
             this.setOnMousePressed(event -> {
+                String imageName=this.getImage().getUrl().split("/")[this.getImage().getUrl().split("/").length-1].substring(0,4);
+
+
                 if (isDraggable) {
                     mouseXOffset = this.getLayoutX() - event.getSceneX();
                     mouseYOffset = this.getLayoutY() - event.getSceneY();
                 }
             });
 
+//鼠标拖动 tile
             this.setOnMouseDragged(event -> {
+
                 if (isDraggable) {
                     this.setLayoutX(event.getSceneX() + mouseXOffset);
                     this.setLayoutY(event.getSceneY() + mouseYOffset);
 
                     Rectangle closest = findClosestRectangle(this.getLayoutX(), this.getLayoutY());
+
                     if (highlighted != null) {
                         highlighted.setFill(Color.LIGHTGRAY);
                     }
+
                     int row = GridPane.getRowIndex(closest);
                     int column = GridPane.getColumnIndex(closest);
                     String possiblePlacement = placementSequence + tileType + row + column;
                     double closestDistance = distanceToRectangle(closest, this.getLayoutX(), this.getLayoutY());
+
                     if (closestDistance > 2 * SQUARE_SIZE) {
+                        System.out.println(closestDistance);
                     } else if (Metro.isPlacementSequenceValid(possiblePlacement)) {
                         closest.setFill(Color.GREEN);
-                    } else
+                    } else {
                         closest.setFill(Color.RED);
-                    highlighted = closest;
-                }
+                    }
+
+                highlighted = closest;
+            }
             });
 
+
+        //
             this.setOnMouseReleased(event -> {
                 if (emptyBoardSquares.size() > 0 && isDraggable) {
                     Rectangle closest = findClosestRectangle(this.getLayoutX(), this.getLayoutY());
@@ -117,10 +142,12 @@ public class Game extends Application {
                             isCardShowing = false;
                             deck.remove(0);
                             autoDraw();
+
                         } else {
                             this.setLayoutX(initialX);
                             this.setLayoutY(initialY);
                         }
+
                     } else if (closestDistance > 2 * SQUARE_SIZE && playerArrayList.get(indexOfPlayersTurn).isHolding()) {
                         if (this == tileInHandImages.get(indexOfPlayersTurn)) {
                             this.setLayoutX(tileHandling.getLayoutX() + tileHandling.getChildren().get(5).getLayoutX());
@@ -129,6 +156,7 @@ public class Game extends Application {
                             this.setLayoutX(initialX);
                             this.setLayoutY(initialY);
                         }
+
                     } else if (Metro.isPlacementSequenceValid(possiblePlacement)) {
                         this.setLayoutX(closest.getLayoutX() + emptyBoard.getLayoutX());
                         this.setLayoutY(closest.getLayoutY() + emptyBoard.getLayoutY());
@@ -142,9 +170,11 @@ public class Game extends Application {
                             playerArrayList.get(indexOfPlayersTurn).updateTileHolding("");
                             tileInHandImages.put(indexOfPlayersTurn, null);
                         }
-                        if (indexOfPlayersTurn == playerArrayList.size() - 1)
+                        if (indexOfPlayersTurn == playerArrayList.size() - 1) {
                             indexOfPlayersTurn = 0;
-                        else indexOfPlayersTurn++;
+                        } else {
+                            indexOfPlayersTurn++;
+                        }
                         updateTileHandling();
                     } else if (isCardShowing) {
                         //snap back to the deck position
@@ -155,11 +185,13 @@ public class Game extends Application {
                         this.setLayoutX(tileHandling.getLayoutX() + tileHandling.getChildren().get(5).getLayoutX());
                         this.setLayoutY(tileHandling.getLayoutY() + tileHandling.getChildren().get(5).getLayoutY());
                     }
-                    highlighted.setFill(Color.LIGHTGRAY);
+
+//                    highlighted.setFill(Color.LIGHTGRAY);
                     highlighted = null;
                 }
             });
         }
+
 
         public void moveImageToBoardWithoutTransition(String piecePlacement) {
             int row = piecePlacement.charAt(4) - '0';
@@ -186,6 +218,7 @@ public class Game extends Application {
                     new MoveTo(startX, startY),
                     new LineTo(endX, endY)
             };
+
             Path line = new Path();
             line.getElements().addAll(pathElement);
             //path transition animation
@@ -202,12 +235,15 @@ public class Game extends Application {
         }
     }
 
+
+
     /**
      * @param r the rectangle
      * @param x x coordinate of the point
      * @param y y coordinate of the point
      * @return distance between layouts of a rectangle and another point
      */
+
     private double distanceToRectangle(Node r, double x, double y) {
         double dx = x - r.getLayoutX() - r.getParent().getLayoutX();
         double dy = y - r.getLayoutY() - r.getParent().getLayoutY();
@@ -240,20 +276,42 @@ public class Game extends Application {
      * Restart button
      * maybe difficulty in future (if playing with computer)
      */
-    private void makeControls() {
 
+    private void makeControls() {
         Label l1 = new Label("Difficulty");
         Slider slider = new Slider();
+        slider.setMin(0);
+        slider.setMax(100);
+        slider.setValue(40);
+        updateComputerDifficult((int) slider.getValue());
         Button st = new Button("START");
-        st.setOnAction(event -> {
-            showEmptyBoard();
-            getPlayerInfo();
-            initiateScoreBoard();
-            deck = Metro.getFreshDeck();
-            initializeTileHandling();
+        Button rs = new Button("RESTART");
+                    st.setOnAction(event -> {
+                        Alert start = new Alert(Alert.AlertType.INFORMATION);
+                        start.setTitle("Game Start");
+                        start.setHeaderText(null);
+                        start.setContentText("Degree of Difficulty： "+(int)slider.getValue());
+                        start.showAndWait();
+            if (stations.getChildren().size()==0){
+                showEmptyBoard();
+                getPlayerInfo();
+                initiateScoreBoard();
+                deck = Metro.getFreshDeck();
+                initializeTileHandling();
+            }else{
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Game Start");
+                alert.setHeaderText("Game fun for you!");
+                alert.setContentText("Game  Start   Please  enter  'Let's  go'  button");
+                alert.showAndWait();
+            }
+
         });
+                    rs.setOnAction(event ->{
+                        clearAll();
+                    } );
         HBox bottomControls = new HBox();
-        bottomControls.getChildren().addAll(l1, slider, st);
+        bottomControls.getChildren().addAll(l1, slider, st,rs);
         bottomControls.setLayoutX(100);
         bottomControls.setLayoutY(VIEWER_HEIGHT - 50);
         bottomControls.setSpacing(30);
@@ -264,13 +322,19 @@ public class Game extends Application {
      * function to get empty board added on the root
      */
     private void showEmptyBoard() {
+
         Viewer.showStations(stations);
-        root.getChildren().add(stations);
+
+            root.getChildren().add(stations);
+
         //making light gray rectangles for the empty positions on the board
         for (int i = 0; i < DIM; i++) {
+
             for (int j = 0; j < DIM; j++) {
-                if ((i == 3 || i == 4) && (j == 3 || j == 4))
+                if ((i == 3 || i == 4) && (j == 3 || j == 4)) {
                     continue;
+                }
+
                 Rectangle r = new Rectangle();
                 r.setWidth(SQUARE_SIZE);
                 r.setHeight(SQUARE_SIZE);
@@ -284,33 +348,42 @@ public class Game extends Application {
         //emptyBoard.setGridLinesVisible(true);
         emptyBoard.setLayoutX(SQUARE_SIZE);
         emptyBoard.setLayoutY(SQUARE_SIZE);
-        root.getChildren().add(emptyBoard);
+            root.getChildren().add(emptyBoard);
     }
 
     /**
      * function to update the player name in tile handling VBox
      */
     private void updateTileHandling() {
+
         if (emptyBoardSquares.size() > 0) {
             Text turnOf = new Text(playerArrayList.get(indexOfPlayersTurn).getName() + "'s turn");
             turnOf.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 20));
+
             tileHandling.getChildren().set(0, turnOf);
             int previousPlayer = indexOfPlayersTurn - 1;
-            if (indexOfPlayersTurn == 0)
+
+            if (indexOfPlayersTurn == 0) {
                 previousPlayer = numberOfPlayers - 1;
-            if (playerArrayList.get(previousPlayer).isHolding())
+            }
+
+            if (playerArrayList.get(previousPlayer).isHolding()) {
                 root.getChildren().remove(tileInHandImages.get(previousPlayer));
+            }
 
             if (indexOfPlayersTurn < numberOfHumanPlayers) {
                 if (playerArrayList.get(indexOfPlayersTurn).isHolding()) {
                     root.getChildren().add(tileInHandImages.get(indexOfPlayersTurn));
                     tileInHandImages.get(indexOfPlayersTurn).isDraggable = true;
-                } else autoDraw();
+                } else {
+                    autoDraw();
+                }
             }
             //if this player is a computer, make a move
             else {
                 makeComputerMove();
             }
+
         }
     }
 
@@ -318,6 +391,7 @@ public class Game extends Application {
      * first function called to et player info, in turn calls
      * getComputerPlayer to find computer opponents
      */
+
     private void getPlayerInfo() {
         Integer[] playerCountData = {1, 2, 3, 4, 5, 6};
         List<Integer> playerCount;
@@ -325,6 +399,7 @@ public class Game extends Application {
         String titleTxt = "Players";
 
         ChoiceDialog dialog = new ChoiceDialog(playerCount.get(0), playerCount);
+
         dialog.setTitle(titleTxt);
         dialog.setHeaderText("How many people are playing");
         Optional<Integer> result = dialog.showAndWait();
@@ -332,6 +407,8 @@ public class Game extends Application {
         if (result.isPresent()) {
             numberOfHumanPlayers = result.get();
             getComputerPlayers();
+        }else{
+         System.exit(0);
         }
     }
 
@@ -340,6 +417,7 @@ public class Game extends Application {
      * if total number of players>6, then calls error dialog box
      * otherwise take in the name of players
      */
+//选择电脑玩家
     private void getComputerPlayers() {
         Integer[] computerPlayerCountData = {0, 1, 2, 3, 4, 5};
         List<Integer> computerPlayerCount;
@@ -347,11 +425,13 @@ public class Game extends Application {
         String titleTxt = "Computer opponents";
 
         ChoiceDialog dialog = new ChoiceDialog(computerPlayerCount.get(0), computerPlayerCount);
+
         dialog.setTitle(titleTxt);
         dialog.setHeaderText("How many computer opponents you want to go against?\n Choose \"Back\" to go to previous menu");
         ((Button) dialog.getDialogPane().lookupButton(ButtonType.CANCEL)).setText("Back");
 
         Optional<Integer> result = dialog.showAndWait();
+
         if (result.isPresent()) {
             if (numberOfHumanPlayers + result.get() > 6 || numberOfHumanPlayers + result.get() < 2) {
                 playerCountError();
@@ -369,6 +449,7 @@ public class Game extends Application {
      * When total number of players>6, this is called.
      * gives a chance to go back to computerPlayer selection
      */
+
     private void playerCountError() {
         String titleTxt = "Oh No!!";
         Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -385,6 +466,7 @@ public class Game extends Application {
      * default player name are P1, P2, ...
      * default computer player name are C1, C2, ...
      */
+//获取 玩家名字
     private void getPlayersName() {
         Dialog<String> dialog = new Dialog<>();
         String titleTxt = "Names";
@@ -392,8 +474,8 @@ public class Game extends Application {
         dialog.setHeaderText("Enter name of the players : ");
         dialog.setResizable(true);
         GridPane grid = new GridPane();
-
-        Label[] labels = new Label[numberOfHumanPlayers];           //Lables array to show which player info is in the given text field
+        //Lables array to show which player info is in the given text field
+        Label[] labels = new Label[numberOfHumanPlayers];
         TextField[] textFields = new TextField[numberOfHumanPlayers];
         for (int i = 0; i < labels.length; i++) {
             int j = i + 1;
@@ -418,10 +500,12 @@ public class Game extends Application {
                 if (!textFields[i].getText().isEmpty()) {
                     name = textFields[i].getText();
                 } else {
-                    name = "P" + (i + 1);         //default player name
+                    //default player name
+                    name = "P" + (i + 1);
                 }
                 playerArrayList.add(new Player(name));
             }
+
             //add computer players to the list
             for (int i = 0; i < numberOfComputerPlayers; i++) {
                 playerArrayList.add(new Player("C" + (i + 1)));
@@ -438,14 +522,16 @@ public class Game extends Application {
         ArrayList<Text> playerName = new ArrayList<>();
         ArrayList<Text> playerScore = new ArrayList<>();
         //heading of the scoreboard
-        Text heading = new Text("SCOREBOARD");
+        Text heading = new Text("SCORE BOARD");
         heading.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 30));
         double headingWidth = 250;
         double headingHeight = 30;
         //left sub heading
+
         Text subHeadingLeft = new Text("NAME");
         subHeadingLeft.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 20));
         //Right subheading
+
         Text subHeadingRight = new Text("SCORE");
         subHeadingRight.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 20));
         double subHeadingWidth = headingWidth / 2;
@@ -460,16 +546,19 @@ public class Game extends Application {
             playerName.add(new Text(playerArrayList.get(i).getName()));
             playerScore.add(new Text(String.valueOf(playerArrayList.get(i).getScore())));
         }
+
         //adding nodes sequentially to help in removal later on
         //so player names come first and then do scores
         for (int i = 0; i < numberOfPlayers; i++) {
             playerName.get(i).setFont(Font.font("verdana", FontWeight.NORMAL, FontPosture.REGULAR, 15));
             nameAndScore.add(playerName.get(i), 0, i);
         }
+
         for (int i = 0; i < numberOfPlayers; i++) {
             playerScore.get(i).setFont(Font.font("verdana", FontWeight.NORMAL, FontPosture.REGULAR, 15));
             nameAndScore.add(playerScore.get(i), 1, i);
         }
+
         //Formatting the grid pane
         nameAndScore.setLayoutX(0);
         nameAndScore.setLayoutY(headingHeight + subHeadingHeight);
@@ -479,13 +568,13 @@ public class Game extends Application {
         nameAndScore.getColumnConstraints().add(0, new ColumnConstraints(110));
         nameAndScore.getColumnConstraints().add(1, new ColumnConstraints(70));
         nameAndScore.setPadding(new Insets(5, 5, 5, 30));
-
         scoreBoard.getChildren().addAll(heading, subHeadingLeft, subHeadingRight, nameAndScore);
         scoreBoard.setLayoutX(VIEWER_WIDTH - headingWidth);
         scoreBoard.setLayoutY(50);
         root.getChildren().add(scoreBoard);
     }
 
+//初始化  tile 面板
     private void initializeTileHandling() {
         Rectangle emptyFaceUpDeck = new Rectangle();
         Rectangle emptyTileInHand = new Rectangle();
@@ -493,6 +582,7 @@ public class Game extends Application {
         turnOf.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 20));
         Text deckHeading = new Text("Deck");
         deckHeading.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 15));
+
         Text tileInHandHeading = new Text("Tile In Hand");
         tileInHandHeading.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 15));
 
@@ -506,16 +596,26 @@ public class Game extends Application {
         draw.setOnAction(actionEvent -> {
             if (deck.size() != 0 && !isCardShowing) {
                 String tileType = deck.get(0);
-                DraggableImage draggableImage = new DraggableImage(SQUARE_SIZE, tileType, tileHandling.getLayoutX() + tileHandling.getChildren().get(2).getLayoutX(), tileHandling.getLayoutY() + tileHandling.getChildren().get(2).getLayoutY());
+                DraggableImage draggableImage =
+                        new DraggableImage(SQUARE_SIZE, tileType, tileHandling.getLayoutX() + tileHandling.getChildren().get(2).getLayoutX(), tileHandling.getLayoutY() + tileHandling.getChildren().get(2).getLayoutY());
                 root.getChildren().add(draggableImage);
                 isCardShowing = true;
+            }else {
+                //game over
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Game  Over");
+                alert.setHeaderText("Game Over!");
+                alert.setContentText("Game  Over   You can play again");
+                alert.showAndWait();
             }
         });
+
         emptyTileInHand.setWidth(SQUARE_SIZE);
         emptyTileInHand.setHeight(SQUARE_SIZE);
         emptyTileInHand.setArcWidth(3);
         emptyTileInHand.setArcHeight(3);
         emptyTileInHand.setFill(Color.LIGHTGRAY);
+
         tileHandling.getChildren().addAll(turnOf, deckHeading, emptyFaceUpDeck, draw, tileInHandHeading, emptyTileInHand);
         tileHandling.setLayoutY(350);
         tileHandling.setLayoutX(800);
@@ -528,6 +628,7 @@ public class Game extends Application {
      * function for auto drawing from deck if no tile in hand
      * ond when tile is place in hand
      */
+
     private void autoDraw() {
         String tileType = deck.get(0);
         DraggableImage draggableImage = new DraggableImage(SQUARE_SIZE, tileType, tileHandling.getLayoutX() + tileHandling.getChildren().get(2).getLayoutX(), tileHandling.getLayoutY() + tileHandling.getChildren().get(2).getLayoutY());
@@ -539,6 +640,7 @@ public class Game extends Application {
      * function for making/showing a computer move
      * draggable property of images is  set to off so that humans may not cause any interference
      */
+
     private void makeComputerMove() {
         //if computer player has a in hand card
         if (playerArrayList.get(indexOfPlayersTurn).isHolding()) {
@@ -548,11 +650,13 @@ public class Game extends Application {
             //adding some time delay
 //            delayForMillis(1000);
             //if we draw and play this card
+
             if (Metro.shouldDraw(placementSequence.toString(), playerArrayList.get(indexOfPlayersTurn).getTileInHand())) {
                 //draw
                 String tileType = deck.get(0);
                 DraggableImage draggableImage = new DraggableImage(SQUARE_SIZE, tileType, tileHandling.getLayoutX() + tileHandling.getChildren().get(2).getLayoutX(), tileHandling.getLayoutY() + tileHandling.getChildren().get(2).getLayoutY());
                 draggableImage.isDraggable = false;
+
                 root.getChildren().add(draggableImage);
                 //adding some time delay
 //                delayForMillis(2000);
@@ -613,37 +717,49 @@ public class Game extends Application {
         //adding some time delay
 //        delayForMillis(2000);
         //update the player turn index
-        if (indexOfPlayersTurn == numberOfPlayers - 1)
+        if (indexOfPlayersTurn == numberOfPlayers - 1) {
             indexOfPlayersTurn = 0;
-        else
+        } else {
             indexOfPlayersTurn++;
+        }
         updateTileHandling();
     }
 
-    /**
-     * adding a delay method
-     */
-    private void delayForMillis(long time) {
-        //adding some time delay
-        try {
-            Thread.sleep(time);
-        } catch (InterruptedException ex) {
-            Thread.currentThread().interrupt();
+
+        /**
+         * adding a delay method
+         */
+        private void delayForMillis(long time) {
+            //adding some time delay
+            try {
+                Thread.sleep(time);
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+            }
         }
-    }
 
-    /**
-     * during restart, clean up the nodes
-     * or make a new instance...
-     * how to do?
-     */
-    private void clearAll() {
-
+        /**
+         * during restart, clean up the nodes
+         * or make a new instance...
+         * how to do?
+         */
+        //清除 面板所有组件
+        private void clearAll() {
+            root.getChildren().clear();
+            makeControls();
+            root.getChildren().add(controls);
+           stations.getChildren().clear();
+           scoreBoard.getChildren().clear();
+           emptyBoard.getChildren().clear();
+           this.isCardShowing=false;
+           tileHandling.getChildren().clear();
     }
 
     /**
      * function to update the text belonging to nameAndScore grid pane in the scoreBoard group.
      */
+
+    //更新分数榜单
     private void updateScoreBoard(String placementSequence) {
         //get updated player list
         Metro.assignScore(placementSequence, playerArrayList);
@@ -661,11 +777,40 @@ public class Game extends Application {
         }
     }
 
+
+     private void updateComputerDifficult(int diffcultyValue){
+
+         HashMap<Integer,Player>  playerHashMap=new HashMap<>();
+         playerHashMap.put(diffcultyValue,new Player());
+         Tile[] start = Tile.getStartingTiles();
+         ArrayList<String > deck = new ArrayList<>();
+         for (Tile tile : start) {
+             for (int i = 0; i < tile.getNumber();++i) {
+                 String type = tile.getType();
+                 deck.add(type);
+             }
+         }
+         Board[] startBoard = Board.getStartBoard();
+         List<Board> board = new ArrayList<>(Arrays.asList(startBoard));
+
+         for(int i=4;i<placementSequence.length();i+=6) {
+             String position = placementSequence.substring(i, i + 2);
+
+             for (int j = 0; j < board.size(); j++) {
+                 String name = board.get(j).getName();
+                 if (name.equals(position)) {
+                     board.remove(j);
+                 }
+             }
+         }
+     }
+
+
+//程序启动
     @Override
     public void start(Stage primaryStage) throws Exception {
         primaryStage.setTitle("Metro Game");
         Scene scene = new Scene(root, VIEWER_WIDTH, VIEWER_HEIGHT);
-
         primaryStage.setScene(scene);
         makeControls();
         root.getChildren().add(controls);

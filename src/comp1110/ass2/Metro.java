@@ -19,20 +19,28 @@ public class Metro {
     public static boolean isPiecePlacementWellFormed(String piecePlacement) {
         // FIXME Task 2: determine whether a piece placement is well-formed
         //checking length
-        if (piecePlacement.length() != 6)
+        if (piecePlacement.length() != 6) {
             return false;
+        }
+
         //first four characters between 'a'(97 ASCII) and 'd' (100 ASCII)
+
         for (int i = 0; i < 4; i++) {
             int x = piecePlacement.charAt(i);
-            if (!(x >= 97 && x <= 100))
+            if (!(x >= 97 && x <= 100)) {
                 return false;
+            }
         }
+
         //fifth and sixth character between '0'(48 ASCII) and '7'(55 ASCII)
+
         for (int i = 4; i < 6; i++) {
             int x = piecePlacement.charAt(i);
-            if (!(x >= 48 && x <= 55))
+            if (!(x >= 48 && x <= 55)) {
                 return false;
+            }
         }
+
         return true;
     }
 
@@ -49,6 +57,7 @@ public class Metro {
      *                  board
      * @return true if this placement sequence is well-formed
      */
+
     public static boolean isPlacementSequenceWellFormed(String placement) {
         // FIXME Task 3: determine whether a placement sequence is well-formed
         //check length
@@ -56,9 +65,11 @@ public class Metro {
         if (l % 6 != 0 || l > 360) {
             return false;
         }
+
         //check tile type valid
-        if (!checkTileType(placement))
+        if (!checkTileType(placement)) {
             return false;
+        }
 
         Tile[] sorted = sortedOccurrence(placement);
         Tile[] allTiles = Tile.getStartingTiles();
@@ -80,11 +91,13 @@ public class Metro {
      *                          all players' hands
      * @return a random tile from the deck
      */
+
     public static String drawFromDeck(String placementSequence, String totalHands) {
         // FIXME Task 5: draw a random tile from the deck
         Tile[] remaining = Tile.getStartingTiles();
         Tile[] occurrence = sortedOccurrence(placementSequence);
-        int count = 0;          //for creating a random number for selection
+        //for creating a random number for selection
+        int count = 0;
         Random rand = new Random();
 
         for (int i = 0; i < occurrence.length; ++i) {
@@ -105,8 +118,9 @@ public class Metro {
             }
         }
 
-        if (count == 0)
+        if (count == 0) {
             return "";
+    }
         int r = rand.nextInt(count) + 1;
         //i am doing this with more calculations/processing using less memory
         //alternate way is to create a string array of the remaining tile when we are
@@ -144,6 +158,7 @@ public class Metro {
         // FIXME Task 6: determine whether a placement sequence is valid
         //overlap and central station check
         //make a 8x8 matrix and store 0 (default upon initialization) and 1 (if present in the placement sequence)
+
         int[][] tilePresent = new int[8][8];
         for (int i = 4; i < placementSequence.length(); i = i + 6) {
             int row = (int) placementSequence.charAt(i) - 48;
@@ -153,26 +168,34 @@ public class Metro {
             char c = placementSequence.charAt(i - 2);
             char d = placementSequence.charAt(i - 1);
 
-            if (tilePresent[row][col] == 0)
+            if (tilePresent[row][col] == 0) {
                 tilePresent[row][col] = 1;
-            else
-                return false;           //overlap check
-
-            if ((row == 3 || row == 4) && (col == 3 || col == 4))       //central station positions check
+            } else {
+                //overlap check
                 return false;
+            }
+//central station positions check
+            if ((row == 3 || row == 4) && (col == 3 || col == 4))
+            {
+                return false;
+            }
 
             if (((row == 2 || row == 5) && (col == 3 || col == 4)) || ((row == 3 || row == 4) && (col == 2 || col == 5)) ){
                 if(tilePresent[row-1][col] == 0 && tilePresent[row+1][col] == 0
-                        &&tilePresent[row][col+1] == 0 && tilePresent[row][col-1] == 0)
-                    return false;           //next to central station check
+                        &&tilePresent[row][col+1] == 0 && tilePresent[row][col-1] == 0) {
+                    //next to central station check
+                    return false;
+                }
             }
 
             if (row == 0 && a == 'd'){
                 if (b == 'd' && c == 'd' && d == 'd' && i == 4){
                     continue;
                 }else{
-                    if(!checkInnerBoard(tilePresent))
-                        return false;//check not edge place
+                    if(!checkInnerBoard(tilePresent)) {
+                        //check not edge place
+                        return false;
+                    }
                     for(int y=1;y<7;y++){
                         if(tilePresent[7][y]!=1&&c!='d'){
                             return false;
@@ -193,15 +216,21 @@ public class Metro {
                         connerCheck = false;
                     }
                     if(!connerCheck)
-                        return false;   //check conner place
+                        //check conner place
+                    {
+                        return false;
+                    }
                 }
             }
+
             if (row == 7 && c == 'd'){
                 if (b == 'd' && a == 'd' && d == 'd' && i == 4){
                     continue;
                 }else{
-                    if(!checkInnerBoard(tilePresent))
-                        return false;//check not edge place
+                    if(!checkInnerBoard(tilePresent)) {
+                        //check not edge place
+                        return false;
+                    }
                     for(int y=1;y<7;y++){
                         if(tilePresent[0][y]!=1&&a!='d'){
                             return false;
@@ -221,10 +250,12 @@ public class Metro {
                     if(tilePresent[0][7]!=1&&b!='c'&&a!='b'&&a!='d'&&b!='d'){
                         connerCheck = false;
                     }
-                    if(!connerCheck)
+                    if(!connerCheck) {
                         return false;
+                    }
                 }
             }
+
             if (col == 0 && d == 'd'){
                 if (b == 'd' && c == 'd' && a == 'd' && i == 4){
                     continue;
@@ -236,13 +267,15 @@ public class Metro {
                             return false;
                         }
                     }
+
                     for(int y=1;y<7;y++){
                         if(tilePresent[0][y]!=1&&a!='d'){
                             return false;
                         }else if(tilePresent[7][y]!=1&&c!='d'){
                             return false;
                         }
-                    }           //check edge place
+                    }
+                    //check edge place
                     boolean connerCheck=true;
                     if(tilePresent[7][7]!=1&&c!='c'&&b!='b'&&b!='d'&&c!='d'){
                         connerCheck = false;
@@ -250,21 +283,24 @@ public class Metro {
                     if(tilePresent[0][7]!=1&&b!='c'&&a!='b'&&a!='d'&&b!='d'){
                         connerCheck = false;
                     }
-                    if(!connerCheck)
+                    if(!connerCheck) {
                         return false;
+                    }
                 }
             }
             if (col == 7 && b == 'd'){
                 if (a == 'd' && c == 'd' && d == 'd' && i == 4){
                     continue;
                 }else{
-                    if(!checkInnerBoard(tilePresent))
+                    if(!checkInnerBoard(tilePresent)) {
                         return false;//check not edge place
+                    }
                     for(int x=1;x<7;x++){
                         if(tilePresent[x][0]!=1&&d!='d'){
                             return false;
                         }
                     }
+
                     for(int y=1;y<7;y++){
                         if(tilePresent[0][y]!=1&&a!='d'){
                             return false;
@@ -294,14 +330,18 @@ public class Metro {
                         return false;
                     }
                 }
+
                 for(int y=1;y<7;y++){
                     if(tilePresent[0][y]!=1&&a!='d'){
                         return false;
                     }else if(tilePresent[7][y]!=1&&c!='d'){
                         return false;
                     }
-                }           //check edge place
+                }
+
+                //check edge place
                 boolean connerCheck=true;
+
                 if(tilePresent[7][7]!=1&&c!='c'&&b!='b'&&b!='d'&&c!='d'){
                     connerCheck = false;
                 }
@@ -312,8 +352,9 @@ public class Metro {
                     connerCheck = false;
                 }
 
-                if(!connerCheck)
+                if(!connerCheck) {
                     return false;
+                }
             }
             if (row == 7 && col == 0 &&(d=='c'||c=='b')){
                 if(!checkInnerBoard(tilePresent))
@@ -331,7 +372,8 @@ public class Metro {
                     }else if(tilePresent[7][y]!=1&&c!='d'){
                         return false;
                     }
-                }           //check edge place
+                }
+                //check edge place
                 boolean connerCheck=true;
                 if(tilePresent[7][7]!=1&&c!='c'&&b!='b'&&b!='d'&&c!='d'){
                     connerCheck = false;
@@ -346,6 +388,7 @@ public class Metro {
                 if(!connerCheck)
                     return false;
             }
+
             if (row == 0 && col == 7 &&(b=='c'||a=='b')){
                 if(!checkInnerBoard(tilePresent))
                     return false;//check not edge place
@@ -364,9 +407,11 @@ public class Metro {
                     }
                 }           //check edge place
                 boolean connerCheck=true;
+
                 if(tilePresent[7][7]!=1&&c!='c'&&b!='b'&&b!='d'&&c!='d'){
                     connerCheck = false;
                 }
+
                 if(tilePresent[0][0]!=1&&a!='c'&&d!='b'&&a!='d'&&d!='d'){
                     connerCheck = false;
                 }
@@ -379,7 +424,9 @@ public class Metro {
             }
             if (row == 7 && col == 7 &&(c=='c'||b=='b')){
                 if(!checkInnerBoard(tilePresent))
-                    return false;//check not edge place
+                    //check not edge place
+                    return false;
+
                 for(int x=1;x<7;x++){
                     if(tilePresent[x][7]!=1&&b!='d'){
                         return false;
@@ -387,6 +434,7 @@ public class Metro {
                         return false;
                     }
                 }
+
                 for(int y=1;y<7;y++){
                     if(tilePresent[0][y]!=1&&a!='d'){
                         return false;
@@ -405,13 +453,15 @@ public class Metro {
                     connerCheck = false;
                 }
 
-                if(!connerCheck)
+                if(!connerCheck) {
                     return false;
+                }
             }              //conner of the board check
 
             if (row!=0&&row!=7&&col!=0&&col!=7){
-                if(tilePresent[row-1][col]!=1&&tilePresent[row+1][col]!=1&&tilePresent[row][col-1]!=1&&tilePresent[row][col+1]!=1)
+                if(tilePresent[row-1][col]!=1&&tilePresent[row+1][col]!=1&&tilePresent[row][col-1]!=1&&tilePresent[row][col+1]!=1) {
                     return false;
+                }
             }               //check if tile has next tile
         }
 
@@ -427,6 +477,7 @@ public class Metro {
      * @param numberOfPlayers   The number of players in the game
      * @return an array containing the scores for all players
      */
+    //获得分数
     public static int[] getScore(String placementSequence, int numberOfPlayers) {
         // FIXME Task 7: determine the current score for the game
         //initialize with zero scores
@@ -450,10 +501,12 @@ public class Metro {
      * @param numberOfPlayers   The number of players in the game
      * @return A valid placement of the given tile
      */
+
     public static String generateMove(String placementSequence, String piece, int numberOfPlayers) {
         // FIXME Task 9: generate a valid move
         Board[] startBoard = Board.getStartBoard();
         List<Board> board = new ArrayList<>(Arrays.asList(startBoard));
+
         boolean check = false;
         String result ="";
 
@@ -467,12 +520,14 @@ public class Metro {
                 }
             }
         }
-            while(!check){              //check if the sequence is valid. If not, remove the last move and create a new one
+//check if the sequence is valid. If not, remove the last move and create a new one
+            while(!check){
                 Random random = new Random();
                 int num = random.nextInt(board.size());
                 String place = board.get(num).getName();
                 placementSequence = placementSequence.concat(piece);
-                placementSequence = placementSequence.concat(place);        //add a random move
+                //add a random move
+                placementSequence = placementSequence.concat(place);
                 if(!isPlacementSequenceValid(placementSequence)){
                     board.remove(num);
                     placementSequence=placementSequence.substring(0,placementSequence.length()-6);
@@ -491,6 +546,7 @@ public class Metro {
      * @return A new String shows updated placement sequence.
      */
     public static String updatePlacementSequence(String placementSequence, String tilePlacement) {
+
         return "";
     }
 
@@ -500,6 +556,7 @@ public class Metro {
      * @return A boolean shows the game is over or not.
      */
     public static boolean checkGameOver(String placementSequence) {
+
         return false;
     }
 
@@ -510,10 +567,10 @@ public class Metro {
      *                          that have already been played
      * @return a tile array containing sorted occurrence of each tile type
      */
+
     public static Tile[] sortedOccurrence(String placementSequence) {
         Tile[] sorted = Tile.getStartingTiles();
         int l = placementSequence.length();
-
         /*
         //making all occurrences zero
         for (int i = 0; i < sorted.length; ++i) {
@@ -541,18 +598,27 @@ public class Metro {
             }
         }
         */
+
         //Hash map implementation
         HashMap<String, Integer> occurrence = new HashMap<>();
-        for (Tile value : sorted)
+
+
+        for (Tile value : sorted) {
             occurrence.put(value.getType(), 0);
+        }
+
+
         for (int i = 0; i < l; i = i + 6) {
             String s = placementSequence.substring(i, i + 4);
             Integer old = occurrence.get(s);
             occurrence.put(s, old + 1);
         }
+
+
         for (Tile tile : sorted) {
             tile.setNumber(occurrence.get(tile.getType()));
         }
+
             return sorted;
     }
 
@@ -575,8 +641,9 @@ public class Metro {
                     result = true;
                 }
             }
-            if (!result)
+            if (!result) {
                 check = false;
+            }
         }
         return check;
     }
@@ -666,6 +733,7 @@ public class Metro {
                 break;
         }
         //finding the starting coordinates
+
         switch (side) {
             case 0:
                 row = 0;
@@ -693,8 +761,10 @@ public class Metro {
                 score = 0;
                 break;
             }
-            String tile = placementSequence.substring(index-4,index);           //the tile at the position
-            char ch = tile.charAt(startIndex/2);                                //the type of exit at the start index
+            //the tile at the position
+            String tile = placementSequence.substring(index-4,index);
+            //the type of exit at the start index
+            char ch = tile.charAt(startIndex/2);
             /*now depending upon the start index and the type of exit, we get exit index
        startIndex->  0   |   2   |   4   |   6
                 a|   5   |   7   |   1   |   3
@@ -719,14 +789,17 @@ public class Metro {
             //update the score
             score = score + 1;
             //check if we reached edge stations
-            if(row==0 && exitIndex==1)
+            if(row==0 && exitIndex==1) {
                 break;
-            else if(row==7 && exitIndex ==5)
+            } else if(row==7 && exitIndex ==5) {
                 break;
-            if (col==0 && exitIndex ==7)
+            }
+
+            if (col==0 && exitIndex ==7) {
                 break;
-            else if(col==7 && exitIndex==3)
+            } else if(col==7 && exitIndex==3) {
                 break;
+            }
             //finding the next coordinate and startIndex(index at this new coordinate) to look for, depending upon the index of exit
             switch (exitIndex) {
                 case 1:
@@ -761,6 +834,7 @@ public class Metro {
      *
      * @return a tile array containing randomised tiles, a shuffled deck for playing
      */
+
     public static ArrayList<String> getFreshDeck() {
         Tile[] start = Tile.getStartingTiles();
         ArrayList<String > deck = new ArrayList<>();
@@ -781,6 +855,7 @@ public class Metro {
      * @return a boolean shows if inner board has empty space
      */
     public static boolean checkInnerBoard(int[][] tilePresent){
+
         for(int x = 1; x<7;x++){
             for(int y=1; y<7; y++){
                 if(tilePresent[x][y]!=1&&(((x!=3)&&(x!=4))||((y!=3)&&(y!=4)))){
@@ -788,6 +863,7 @@ public class Metro {
                 }
             }
         }
+
         return true;
     }
 

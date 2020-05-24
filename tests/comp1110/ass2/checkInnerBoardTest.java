@@ -22,6 +22,7 @@ public class checkInnerBoardTest {
             {0,0,0,0,0,0,0,0},
     };
 
+
     public static final int[][] FULL_INNER_BOARD = {
             {0,0,0,0,0,0,0,0},
             {0,1,1,1,1,1,1,0},
@@ -61,12 +62,14 @@ public class checkInnerBoardTest {
     private void test(int[][] tilePresent, Boolean expected) {
         boolean out = Metro.checkInnerBoard(tilePresent);
         String board = "";
+
         for(int i=0;i<tilePresent.length;i++){
             board+="[";
             for(int j=0;j<tilePresent[i].length;j++){
                 board+=tilePresent[i][j];
                 board+=", ";
             }
+
             board = board.substring(0,board.length()-1);
             board+="] ,";
         }

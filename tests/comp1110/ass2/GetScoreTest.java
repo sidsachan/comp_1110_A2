@@ -12,6 +12,7 @@ public class GetScoreTest {
     @Rule
     public Timeout globalTimeout = Timeout.millis(1000);
 
+
     @Test
     public void testSimpleTwoPlayer() {
         for (int i = 0; i < Utilities.PARTIAL_ADVANCED_SCORE_BOARDS.length; i++) {

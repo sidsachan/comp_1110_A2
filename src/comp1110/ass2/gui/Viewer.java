@@ -21,12 +21,15 @@ import javafx.stage.Stage;
  * class does not play a game, it just illustrates various piece
  * placements.
  */
+
 public class Viewer extends Application {
+
     /* board layout */
     private static final int SQUARE_SIZE = 70;
     private static final int VIEWER_WIDTH = 1024;
     private static final int VIEWER_HEIGHT = 768;
-    private static final int dim = 8;           //board is 8 by 8
+    //board is 8 by 8
+    private static final int dim = 8;
 
     private static final String URI_BASE = "assets/";
 
@@ -39,17 +42,20 @@ public class Viewer extends Application {
      *
      * @param placement A valid placement string
      */
+
     void makePlacement(String placement) {
         // FIXME Task 4: implement the simple placement viewer
-        if(placement.length()%6!=0)
+        if(placement.length()%6!=0) {
             return;
+        }
 
         Group tiles = new Group();
-
+        System.out.println("list: "+root.getChildren());
         root.getChildren().add(tiles);
         //for clearing previously drawn tiles
-        if(root.getChildren().indexOf(tiles)==3)
+        if(root.getChildren().indexOf(tiles)==3) {
             root.getChildren().remove(2);
+        }
 
         int number = placement.length()/6;
 
@@ -74,6 +80,7 @@ public class Viewer extends Application {
     /**
      * Draw the stations
      */
+
      public static void showStations(Group root){
         Group stations = new Group();
         // top represents all the stations on the top(1-8)
@@ -91,6 +98,7 @@ public class Viewer extends Application {
         top.setLayoutX(SQUARE_SIZE);
         top.setLayoutY(0);
         //left represents all stations on left side (9-16)
+
         Group left = new Group();
         for (int i=dim+1;i<=dim*2;++i){
             ImageView im = new ImageView();
@@ -102,8 +110,10 @@ public class Viewer extends Application {
             im.setLayoutY((i-(dim+1))*SQUARE_SIZE);
             left.getChildren().add(im);
         }
+
         left.setLayoutX(0);
         left.setLayoutY(SQUARE_SIZE);
+
         //bottom represents all stations on bottom(17-24)
         Group bottom = new Group();
         for (int i=dim*2+1;i<=dim*3;++i){
@@ -115,6 +125,7 @@ public class Viewer extends Application {
             im.setLayoutX((i - (dim*2+1))*SQUARE_SIZE);
             bottom.getChildren().add(im);
         }
+
         bottom.setLayoutX(SQUARE_SIZE);
         bottom.setLayoutY(SQUARE_SIZE+dim*SQUARE_SIZE);
         //right is for all the stations on the right (17-24)
@@ -184,11 +195,14 @@ public class Viewer extends Application {
     /**
      * Create a basic text field for input and a refresh button.
      */
+
     private void makeControls() {
+
         Label label1 = new Label("Placement:");
         textField = new TextField();
         textField.setPrefWidth(300);
         Button button = new Button("Refresh");
+
         button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
@@ -205,13 +219,12 @@ public class Viewer extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
         primaryStage.setTitle("Metro Game Viewer");
         Scene scene = new Scene(root, VIEWER_WIDTH, VIEWER_HEIGHT);
         root.getChildren().add(controls);
         showStations(root);
         makeControls();
-
         primaryStage.setScene(scene);
         primaryStage.show();
     }

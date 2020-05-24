@@ -1,6 +1,7 @@
 package comp1110.ass2;
 
 public class Board {
+
     private String name;
 
     public Board(String name) {
@@ -8,6 +9,7 @@ public class Board {
     }
 
     public static Board[] getStartBoard(){
+
         return new Board[]{
                 new Board("00"),
                 new Board("01"),
