@@ -1,8 +1,11 @@
 package comp1110.ass2;
 
+import javax.swing.tree.TreeCellRenderer;
 import java.util.*;
 
 public class Metro {
+    private static TreeMap<Integer,String>scorePlacementSequences=new TreeMap<>();
+    private static TreeMap<Integer,String>allPlacementSequences=new TreeMap<>();
     /**
      * Task 2
      * Determine whether a piece placement is well-formed. For a piece
@@ -16,9 +19,11 @@ public class Metro {
      * @param piecePlacement A String representing the piece to be placed
      * @return True if this string is well-formed
      */
+
     public static boolean isPiecePlacementWellFormed(String piecePlacement) {
         // FIXME Task 2: determine whether a piece placement is well-formed
         //checking length
+
         if (piecePlacement.length() != 6) {
             return false;
         }
@@ -62,6 +67,7 @@ public class Metro {
         // FIXME Task 3: determine whether a placement sequence is well-formed
         //check length
         int l = placement.length();
+
         if (l % 6 != 0 || l > 360) {
             return false;
         }
@@ -121,11 +127,13 @@ public class Metro {
         if (count == 0) {
             return "";
     }
+
         int r = rand.nextInt(count) + 1;
         //i am doing this with more calculations/processing using less memory
         //alternate way is to create a string array of the remaining tile when we are
         //counting the remaining ones.
         count = 0;
+
         for (int i = 0; i < remaining.length; ++i) {
             for (int j = 0; j < remaining[i].getNumber(); j++) {
                 count++;
@@ -134,6 +142,7 @@ public class Metro {
                 }
             }
         }
+
         return "";
     }
 
@@ -154,6 +163,7 @@ public class Metro {
      * @param placementSequence A sequence of placements on the board.
      * @return Whether this placement string is valid.
      */
+
     public static boolean isPlacementSequenceValid(String placementSequence) {
         // FIXME Task 6: determine whether a placement sequence is valid
         //overlap and central station check
@@ -174,6 +184,7 @@ public class Metro {
                 //overlap check
                 return false;
             }
+
 //central station positions check
             if ((row == 3 || row == 4) && (col == 3 || col == 4))
             {
@@ -188,6 +199,7 @@ public class Metro {
                 }
             }
 
+
             if (row == 0 && a == 'd'){
                 if (b == 'd' && c == 'd' && d == 'd' && i == 4){
                     continue;
@@ -196,25 +208,30 @@ public class Metro {
                         //check not edge place
                         return false;
                     }
+
                     for(int y=1;y<7;y++){
                         if(tilePresent[7][y]!=1&&c!='d'){
                             return false;
                         }
                     }
+
                     for(int x=1;x<7;x++){
                         if(tilePresent[x][0]!=1&&d!='d'){
                             return false;
                         }else if(tilePresent[x][7]!=1&&b!='d'){
                             return false;
                         }
-                    }           //check edge place
+                    }
+                    //check edge place
                     boolean connerCheck=true;
                     if(tilePresent[7][0]!=1&&d!='c'&&c!='b'&&c!='d'&&d!='d'){
                         connerCheck = false;
                     }
+
                     if(tilePresent[7][7]!=1&&c!='c'&&b!='b'&&c!='d'&&b!='d'){
                         connerCheck = false;
                     }
+
                     if(!connerCheck)
                         //check conner place
                     {
@@ -480,12 +497,16 @@ public class Metro {
     //获得分数
     public static int[] getScore(String placementSequence, int numberOfPlayers) {
         // FIXME Task 7: determine the current score for the game
-        //initialize with zero scores
+        System.out.println( "getScore~placementSequence: "+ placementSequence);
         int[] score = new int[numberOfPlayers];
+
         int stationPerPlayer = 32 / numberOfPlayers;
+
         int[][] arrangement = stationArrangement(numberOfPlayers);
+
         for (int i = 0; i < numberOfPlayers; i++) {
             for (int j = 0; j < stationPerPlayer; j++) {
+
                 score[i] = score[i] + getScoreForStation(placementSequence, arrangement[i][j]);
             }
         }
@@ -511,6 +532,7 @@ public class Metro {
         String result ="";
 
         for(int i=4;i<placementSequence.length();i+=6) {
+
             String position = placementSequence.substring(i, i + 2);
 
             for (int j = 0; j < board.size(); j++) {
@@ -545,6 +567,22 @@ public class Metro {
      * @param tilePlacement             a six-character String representing the piece to be placed
      * @return A new String shows updated placement sequence.
      */
+//获取所有定义的顺序值
+    public static TreeMap<Integer, String> getAllPlacementSequences() {
+        if(scorePlacementSequences.size()>0){
+            Integer lastScore=scorePlacementSequences.lastKey();
+            String  lastPlacementSequences=scorePlacementSequences.get(lastScore);
+            allPlacementSequences.put(lastScore,lastPlacementSequences);
+        }
+
+        return allPlacementSequences;
+    }
+
+    public static TreeMap<Integer, String> getScorePlacementSequences() {
+
+        return scorePlacementSequences;
+    }
+
     public static String updatePlacementSequence(String placementSequence, String tilePlacement) {
 
         return "";
@@ -567,6 +605,7 @@ public class Metro {
      *                          that have already been played
      * @return a tile array containing sorted occurrence of each tile type
      */
+
 
     public static Tile[] sortedOccurrence(String placementSequence) {
         Tile[] sorted = Tile.getStartingTiles();
@@ -600,6 +639,7 @@ public class Metro {
         */
 
         //Hash map implementation
+
         HashMap<String, Integer> occurrence = new HashMap<>();
 
 
@@ -616,6 +656,7 @@ public class Metro {
 
 
         for (Tile tile : sorted) {
+
             tile.setNumber(occurrence.get(tile.getType()));
         }
 
@@ -629,8 +670,9 @@ public class Metro {
      *                          that have already been played
      * @return boolean represent if tiles' type in the placement sequence are valid
      */
-
+    //检查 tile 类型
     public static boolean checkTileType(String placementSequence) {
+        System.out.println("checkTileType--placementSequence: "+placementSequence);
         Tile[] allTiles = Tile.getStartingTiles();
         boolean result = false;
         boolean check = true;
@@ -655,6 +697,7 @@ public class Metro {
      * @param numberOfPlayers number of players int he game
      * @return a 2D array containing stations owned by respective players
      */
+//根据玩家个数车站布置
     public static int[][] stationArrangement(int numberOfPlayers) {
         int[][] stationDistribution = new int[numberOfPlayers][32 / numberOfPlayers];
         switch (numberOfPlayers) {
@@ -710,7 +753,9 @@ public class Metro {
      * @param stationNumber the station in consideration
      * @return score for a station.
      */
+
     public static int getScoreForStation(String placementSequence, int stationNumber) {
+
         int score = 0;
         int side = (stationNumber - 1) / 8;         //to get which side of board we are talking about (0-top, 1-left, 2-bottom, 3-right)
         int startIndex = -1;                //the index at which the station starts (0-top, 6-left, 4-bottom, 2-right)
@@ -786,8 +831,10 @@ public class Metro {
                     exitIndex = (startIndex + 1) % 8;
                     break;
             }
+
             //update the score
             score = score + 1;
+
             //check if we reached edge stations
             if(row==0 && exitIndex==1) {
                 break;
@@ -834,16 +881,18 @@ public class Metro {
      *
      * @return a tile array containing randomised tiles, a shuffled deck for playing
      */
-
+    //洗牌
     public static ArrayList<String> getFreshDeck() {
         Tile[] start = Tile.getStartingTiles();
         ArrayList<String > deck = new ArrayList<>();
+
         for (Tile tile : start) {
             for (int i = 0; i < tile.getNumber();++i) {
                 String type = tile.getType();
                 deck.add(type);
             }
         }
+
         Collections.shuffle(deck);
         return deck;
     }
@@ -873,11 +922,15 @@ public class Metro {
      * @param playerArrayList array list containing players info
      * @return array list with updated scores
      */
+    //更新玩家分数
     public static ArrayList<Player> assignScore(String placementSequence, ArrayList<Player> playerArrayList){
         int[] scores = getScore(placementSequence,playerArrayList.size());
         for (int i=0;i<scores.length;i++){
             playerArrayList.get(i).updateScore(scores[i]);
+            scorePlacementSequences.put(scores[i],placementSequence);
         }
+        System.out.println("scorePlacementSequences: "+scorePlacementSequences);
+        System.out.println("AllPlacementSequences: "+Metro.getAllPlacementSequences());
         return playerArrayList;
     }
 

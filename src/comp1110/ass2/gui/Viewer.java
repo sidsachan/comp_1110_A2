@@ -52,6 +52,7 @@ public class Viewer extends Application {
         Group tiles = new Group();
         System.out.println("list: "+root.getChildren());
         root.getChildren().add(tiles);
+
         //for clearing previously drawn tiles
         if(root.getChildren().indexOf(tiles)==3) {
             root.getChildren().remove(2);

@@ -55,15 +55,19 @@ public class Game extends Application {
     private int numberOfPlayers;
     //玩家列表
     private ArrayList<Player> playerArrayList = new ArrayList<>();
+    //
     private ArrayList<String> deck = new ArrayList<>();
+
     private ArrayList<Rectangle> emptyBoardSquares = new ArrayList<>();
 
     private HashMap<Integer, DraggableImage> tileInHandImages = new HashMap<>();
 
     private Rectangle highlighted = null;
+
     private StringBuilder placementSequence = new StringBuilder();
     //是否显示card
     private boolean isCardShowing = false;
+    //判断是否该 玩家发牌
     private int indexOfPlayersTurn = 0;
 
     /**
@@ -172,6 +176,7 @@ public class Game extends Application {
                             indexOfPlayersTurn++;
                         }
                         updateTileHandling();
+
                     } else if (isCardShowing) {
                         //snap back to the deck position
                         this.setLayoutX(initialX);
@@ -244,7 +249,6 @@ public class Game extends Application {
         double dx = x - r.getLayoutX() - r.getParent().getLayoutX();
         double dy = y - r.getLayoutY() - r.getParent().getLayoutY();
         return Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
-
     }
 
     /**
@@ -276,15 +280,10 @@ public class Game extends Application {
     private void makeControls() {
         Label l1 = new Label("Difficulty");
         Slider slider = new Slider();
-        slider.setMin(1);
-        slider.setMax(5);
-        slider.setValue(3);
-        slider.setMajorTickUnit(1);
-        slider.setMinorTickCount(0);
-        slider.setSnapToTicks(true);
-        slider.setShowTickMarks(true);
-        slider.setShowTickLabels(true);
-       // updateComputerDifficult((int) slider.getValue());
+        slider.setMin(0);
+        slider.setMax(100);
+        slider.setValue(40);
+        updateComputerDifficult((int) slider.getValue());
         Button st = new Button("START");
         Button rs = new Button("RESTART");
 
@@ -292,13 +291,15 @@ public class Game extends Application {
             Alert start = new Alert(Alert.AlertType.INFORMATION);
             start.setTitle("Game Start");
             start.setHeaderText(null);
-            start.setContentText("Degree of Difficulty： " + slider.getValue());
+            start.setContentText("Degree of Difficulty： "+(int)slider.getValue());
             start.showAndWait();
             if (stations.getChildren().size() == 0) {
                 showEmptyBoard();
                 getPlayerInfo();
                 initiateScoreBoard();
+                //洗牌
                 deck = Metro.getFreshDeck();
+
                 initializeTileHandling();
             } else {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -309,7 +310,6 @@ public class Game extends Application {
             }
 
         });
-
         rs.setOnAction(event -> {
             clearAll();
         });
@@ -326,11 +326,9 @@ public class Game extends Application {
      * function to get empty board added on the root
      */
     private void showEmptyBoard() {
-
         Viewer.showStations(stations);
 
         root.getChildren().add(stations);
-
         //making light gray rectangles for the empty positions on the board
         for (int i = 0; i < DIM; i++) {
 
@@ -359,6 +357,7 @@ public class Game extends Application {
     /**
      * function to update the player name in tile handling VBox
      */
+
     private void updateTileHandling() {
 
         if (emptyBoardSquares.size() > 0) {
@@ -366,6 +365,7 @@ public class Game extends Application {
             turnOf.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 20));
 
             tileHandling.getChildren().set(0, turnOf);
+
             int previousPlayer = indexOfPlayersTurn - 1;
 
             if (indexOfPlayersTurn == 0) {
@@ -432,7 +432,9 @@ public class Game extends Application {
      * if total number of players>6, then calls error dialog box
      * otherwise take in the name of players
      */
+
     private void getComputerPlayers() {
+
         Integer[] computerPlayerCountData = {0, 1, 2, 3, 4, 5};
         List<Integer> computerPlayerCount;
         computerPlayerCount = Arrays.asList(computerPlayerCountData);
@@ -589,7 +591,9 @@ public class Game extends Application {
     }
 
     /**
+
      * a function to initialize tile panel
+
      */
     private void initializeTileHandling() {
         Rectangle emptyFaceUpDeck = new Rectangle();
@@ -662,12 +666,12 @@ public class Game extends Application {
      */
 
     private void makeComputerMove() {
-
         //if computer player has a in hand card
         if (playerArrayList.get(indexOfPlayersTurn).isHolding()) {
             //adding the tile at tile in hand location
             root.getChildren().add(tileInHandImages.get(indexOfPlayersTurn));
             tileInHandImages.get(indexOfPlayersTurn).isDraggable = false;
+
             //if we draw and play this card
             if (Metro.shouldDraw(placementSequence.toString(), playerArrayList.get(indexOfPlayersTurn).getTileInHand())) {
                 //draw
@@ -688,7 +692,9 @@ public class Game extends Application {
                 tileInHandImages.get(indexOfPlayersTurn).moveImageToBoardWithoutTransition(piecePlacement);
                 //update players info and the hash map
                 playerArrayList.get(indexOfPlayersTurn).updateTileHolding("");
+
                 tileInHandImages.put(indexOfPlayersTurn, null);
+
             }
         }
         //if computer player doesn't have a in hand card
@@ -702,11 +708,14 @@ public class Game extends Application {
             if (Metro.shouldKeepInHand(placementSequence.toString(), tileType)) {
                 //update deck, player info and hash map
                 deck.remove(0);
+
                 playerArrayList.get(indexOfPlayersTurn).updateTileHolding(tileType);
                 tileInHandImages.put(indexOfPlayersTurn, draggableImage);
                 //position this one in the tile in hand place
                 draggableImage.setLayoutX(tileHandling.getLayoutX() + tileHandling.getChildren().get(5).getLayoutX());
                 draggableImage.setLayoutY(tileHandling.getLayoutY() + tileHandling.getChildren().get(5).getLayoutY());
+
+
                 //draw another one and play
                 String tileType1 = deck.get(0);
                 DraggableImage draggableImage1 = new DraggableImage(SQUARE_SIZE, tileType1, tileHandling.getLayoutX() + tileHandling.getChildren().get(2).getLayoutX(), tileHandling.getLayoutY() + tileHandling.getChildren().get(2).getLayoutY());
@@ -725,6 +734,7 @@ public class Game extends Application {
                 //update the deck and empty board
                 deck.remove(0);
             }
+
         }
         //update the player turn index
         if (indexOfPlayersTurn == numberOfPlayers - 1) {
@@ -734,6 +744,7 @@ public class Game extends Application {
         }
         updateTileHandling();
     }
+
 
     /**
      * adding a delay method
@@ -751,7 +762,6 @@ public class Game extends Application {
     /**
      * during restart, clean up the nodes
      */
-    //清除 面板所有组件
     private void clearAll() {
         root.getChildren().clear();
         controls.getChildren().clear();
@@ -777,6 +787,7 @@ public class Game extends Application {
     /**
      * function to update the text belonging to nameAndScore grid pane in the scoreBoard group.
      */
+
     private void updateScoreBoard(String placementSequence) {
         //get updated player list
         Metro.assignScore(placementSequence, playerArrayList);
@@ -785,6 +796,7 @@ public class Game extends Application {
             //since the index gets updated on removal we will remove the same index multiple times
             nameAndScore.getChildren().remove(playerArrayList.size());
         }
+
         //adding new nodes for scores
         for (int i = 0; i < playerArrayList.size(); i++) {
             //since the index gets updated on removal we will remove the same index multiple times
@@ -795,32 +807,40 @@ public class Game extends Application {
     }
 
 
-    private void updateComputerDifficult(int difficultyValue) {
-
-        HashMap<Integer, Player> playerHashMap = new HashMap<>();
-        playerHashMap.put(difficultyValue, new Player());
-        Tile[] start = Tile.getStartingTiles();
-        ArrayList<String> deck = new ArrayList<>();
-        for (Tile tile : start) {
-            for (int i = 0; i < tile.getNumber(); ++i) {
-                String type = tile.getType();
-                deck.add(type);
-            }
+     private void updateComputerDifficult(int difficultyValue) {
+        Random random=new Random();
+        //所有 score 对应的  placement sequences
+         TreeMap<Integer, String> allPlacementSequences = Metro.getAllPlacementSequences();
+         if(allPlacementSequences.size()==0){
+             System.out.println("allPlacementSequences is null");
+             return;
+         }
+        if(difficultyValue>=0&&difficultyValue<=20){
+            String placements = allPlacementSequences.get(random.nextInt(difficultyValue));
+            Metro.sortedOccurrence(placements);
         }
-        Board[] startBoard = Board.getStartBoard();
-        List<Board> board = new ArrayList<>(Arrays.asList(startBoard));
-
-        for (int i = 4; i < placementSequence.length(); i += 6) {
-            String position = placementSequence.substring(i, i + 2);
-
-            for (int j = 0; j < board.size(); j++) {
-                String name = board.get(j).getName();
-                if (name.equals(position)) {
-                    board.remove(j);
-                }
-            }
+        else if(difficultyValue>20&&difficultyValue<=40){
+            System.out.println("difficultyValue: "+difficultyValue);
+            String placements = allPlacementSequences.get(random.nextInt(difficultyValue));
+            Metro.sortedOccurrence(placements);
         }
-    }
+        else if(difficultyValue>40&&difficultyValue<60){
+            String placements = allPlacementSequences.get(random.nextInt(difficultyValue));
+            Metro.sortedOccurrence(placements);
+        }
+        else if(difficultyValue>60&&difficultyValue<80){
+            String placements = allPlacementSequences.get(random.nextInt(difficultyValue));
+            Metro.sortedOccurrence(placements);
+        }
+        else {
+            String placements = allPlacementSequences.get(random.nextInt(difficultyValue));
+            Metro.sortedOccurrence(placements);
+        }
+
+
+
+     }
+
 
     //程序启动
     @Override
