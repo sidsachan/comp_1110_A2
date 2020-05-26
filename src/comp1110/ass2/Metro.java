@@ -609,7 +609,11 @@ public class Metro {
 
     public static Tile[] sortedOccurrence(String placementSequence) {
         Tile[] sorted = Tile.getStartingTiles();
+        if (placementSequence == null) {
+            return null;
+        }
         int l = placementSequence.length();
+
         /*
         //making all occurrences zero
         for (int i = 0; i < sorted.length; ++i) {

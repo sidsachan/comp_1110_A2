@@ -110,12 +110,14 @@ public class Game extends Application {
                     double closestDistance = distanceToRectangle(closest, this.getLayoutX(), this.getLayoutY());
 
                     if (closestDistance > 2 * SQUARE_SIZE) {
+
                         //System.out.println(closestDistance);
                     } else if (Metro.isPlacementSequenceValid(possiblePlacement)) {
                         closest.setFill(Color.GREEN);
                     } else {
                         closest.setFill(Color.RED);
                     }
+
                     highlighted = closest;
                 }
             });
@@ -160,6 +162,7 @@ public class Game extends Application {
                         this.isDraggable = false;
                         isCardShowing = false;
                         emptyBoardSquares.remove(closest);
+
 
                         updateScoreBoard(placementSequence.toString());
                         if (this == tileInHandImages.get(indexOfPlayersTurn)) {
@@ -310,6 +313,7 @@ public class Game extends Application {
             }
 
         });
+
         rs.setOnAction(event -> {
             clearAll();
         });
@@ -591,9 +595,7 @@ public class Game extends Application {
     }
 
     /**
-
      * a function to initialize tile panel
-
      */
     private void initializeTileHandling() {
         Rectangle emptyFaceUpDeck = new Rectangle();
@@ -666,12 +668,12 @@ public class Game extends Application {
      */
 
     private void makeComputerMove() {
+
         //if computer player has a in hand card
         if (playerArrayList.get(indexOfPlayersTurn).isHolding()) {
             //adding the tile at tile in hand location
             root.getChildren().add(tileInHandImages.get(indexOfPlayersTurn));
             tileInHandImages.get(indexOfPlayersTurn).isDraggable = false;
-
             //if we draw and play this card
             if (Metro.shouldDraw(placementSequence.toString(), playerArrayList.get(indexOfPlayersTurn).getTileInHand())) {
                 //draw
@@ -714,8 +716,6 @@ public class Game extends Application {
                 //position this one in the tile in hand place
                 draggableImage.setLayoutX(tileHandling.getLayoutX() + tileHandling.getChildren().get(5).getLayoutX());
                 draggableImage.setLayoutY(tileHandling.getLayoutY() + tileHandling.getChildren().get(5).getLayoutY());
-
-
                 //draw another one and play
                 String tileType1 = deck.get(0);
                 DraggableImage draggableImage1 = new DraggableImage(SQUARE_SIZE, tileType1, tileHandling.getLayoutX() + tileHandling.getChildren().get(2).getLayoutX(), tileHandling.getLayoutY() + tileHandling.getChildren().get(2).getLayoutY());
@@ -730,6 +730,7 @@ public class Game extends Application {
             else {
                 String piecePlacement = Metro.generateMove(placementSequence.toString(), tileType, numberOfPlayers);
                 //playing
+
                 draggableImage.moveImageToBoardWithTransition(piecePlacement);
                 //update the deck and empty board
                 deck.remove(0);
@@ -762,6 +763,7 @@ public class Game extends Application {
     /**
      * during restart, clean up the nodes
      */
+    //清除 面板所有组件
     private void clearAll() {
         root.getChildren().clear();
         controls.getChildren().clear();
@@ -782,12 +784,12 @@ public class Game extends Application {
 
         makeControls();
         root.getChildren().add(controls);
+
     }
 
     /**
      * function to update the text belonging to nameAndScore grid pane in the scoreBoard group.
      */
-
     private void updateScoreBoard(String placementSequence) {
         //get updated player list
         Metro.assignScore(placementSequence, playerArrayList);
@@ -807,20 +809,19 @@ public class Game extends Application {
     }
 
 
-     private void updateComputerDifficult(int difficultyValue) {
+    private void updateComputerDifficult(int difficultyValue) {
         Random random=new Random();
         //所有 score 对应的  placement sequences
          TreeMap<Integer, String> allPlacementSequences = Metro.getAllPlacementSequences();
          if(allPlacementSequences.size()==0){
-             System.out.println("allPlacementSequences is null");
              return;
          }
         if(difficultyValue>=0&&difficultyValue<=20){
             String placements = allPlacementSequences.get(random.nextInt(difficultyValue));
+
             Metro.sortedOccurrence(placements);
         }
         else if(difficultyValue>20&&difficultyValue<=40){
-            System.out.println("difficultyValue: "+difficultyValue);
             String placements = allPlacementSequences.get(random.nextInt(difficultyValue));
             Metro.sortedOccurrence(placements);
         }
