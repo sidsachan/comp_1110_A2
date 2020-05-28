@@ -47,6 +47,7 @@ public class Game extends Application {
     private final Group stations = new Group();
     private final GridPane nameAndScore = new GridPane();
     private final VBox tileHandling = new VBox();
+    private Text nameOfPlayersTurn =new Text();
 
     //存放 computer 的 发牌记录
 //    private final HashMap<Integer>
@@ -131,9 +132,9 @@ public class Game extends Application {
                     double closestDistance = distanceToRectangle(closest, this.getLayoutX(), this.getLayoutY());
 
                     if (closestDistance > 2 * SQUARE_SIZE && !playerArrayList.get(indexOfPlayersTurn).isHolding()) {
-                        if (distanceToRectangle(tileHandling.getChildren().get(5), this.getLayoutX(), this.getLayoutY()) < 1.5 * SQUARE_SIZE) {
-                            this.setLayoutX(tileHandling.getLayoutX() + tileHandling.getChildren().get(5).getLayoutX());
-                            this.setLayoutY(tileHandling.getLayoutY() + tileHandling.getChildren().get(5).getLayoutY());
+                        if (distanceToRectangle(tileHandling.getChildren().get(4), this.getLayoutX(), this.getLayoutY()) < 1.5 * SQUARE_SIZE) {
+                            this.setLayoutX(tileHandling.getLayoutX() + tileHandling.getChildren().get(4).getLayoutX());
+                            this.setLayoutY(tileHandling.getLayoutY() + tileHandling.getChildren().get(4).getLayoutY());
                             playerArrayList.get(indexOfPlayersTurn).updateTileHolding(tileType);
                             this.isDraggable = false;
                             tileInHandImages.put(indexOfPlayersTurn, this);
@@ -148,8 +149,8 @@ public class Game extends Application {
 
                     } else if (closestDistance > 2 * SQUARE_SIZE && playerArrayList.get(indexOfPlayersTurn).isHolding()) {
                         if (this == tileInHandImages.get(indexOfPlayersTurn)) {
-                            this.setLayoutX(tileHandling.getLayoutX() + tileHandling.getChildren().get(5).getLayoutX());
-                            this.setLayoutY(tileHandling.getLayoutY() + tileHandling.getChildren().get(5).getLayoutY());
+                            this.setLayoutX(tileHandling.getLayoutX() + tileHandling.getChildren().get(4).getLayoutX());
+                            this.setLayoutY(tileHandling.getLayoutY() + tileHandling.getChildren().get(4).getLayoutY());
                         } else {
                             this.setLayoutX(initialX);
                             this.setLayoutY(initialY);
@@ -186,8 +187,8 @@ public class Game extends Application {
                         this.setLayoutY(initialY);
                     } else if (this == tileInHandImages.get(indexOfPlayersTurn)) {
                         //snap back to the tile in hand position
-                        this.setLayoutX(tileHandling.getLayoutX() + tileHandling.getChildren().get(5).getLayoutX());
-                        this.setLayoutY(tileHandling.getLayoutY() + tileHandling.getChildren().get(5).getLayoutY());
+                        this.setLayoutX(tileHandling.getLayoutX() + tileHandling.getChildren().get(4).getLayoutX());
+                        this.setLayoutY(tileHandling.getLayoutY() + tileHandling.getChildren().get(4).getLayoutY());
                     }
                     highlighted.setFill(Color.LIGHTGRAY);
                     highlighted = null;
@@ -385,10 +386,9 @@ public class Game extends Application {
     private void updateTileHandling() {
 
         if (emptyBoardSquares.size() > 0) {
-            Text turnOf = new Text(playerArrayList.get(indexOfPlayersTurn).getName() + "'s turn");
-            turnOf.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 20));
-
-            tileHandling.getChildren().set(0, turnOf);
+            nameOfPlayersTurn.setText(playerArrayList.get(indexOfPlayersTurn).getName() + "'s turn");
+            nameOfPlayersTurn.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 20));
+            nameOfPlayersTurn.setLayoutX(800 -(nameOfPlayersTurn.getText().length()-7)*2);
 
             int previousPlayer = indexOfPlayersTurn - 1;
 
@@ -648,8 +648,10 @@ public class Game extends Application {
     private void initializeTileHandling() {
         Rectangle emptyFaceUpDeck = new Rectangle();
         Rectangle emptyTileInHand = new Rectangle();
-        Text turnOf = new Text(playerArrayList.get(indexOfPlayersTurn).getName() + "'s turn");
-        turnOf.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 20));
+
+        nameOfPlayersTurn.setText(playerArrayList.get(indexOfPlayersTurn).getName() + "'s turn");
+        nameOfPlayersTurn.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 20));
+
         Text deckHeading = new Text("Deck");
         deckHeading.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 15));
 
@@ -668,7 +670,7 @@ public class Game extends Application {
             if (deck.size() != 0 && !isCardShowing && (indexOfPlayersTurn<numberOfHumanPlayers)) {
                 String tileType = deck.get(0);
                 DraggableImage draggableImage =
-                        new DraggableImage(SQUARE_SIZE, tileType, tileHandling.getLayoutX() + tileHandling.getChildren().get(2).getLayoutX(), tileHandling.getLayoutY() + tileHandling.getChildren().get(2).getLayoutY());
+                        new DraggableImage(SQUARE_SIZE, tileType, tileHandling.getLayoutX() + tileHandling.getChildren().get(1).getLayoutX(), tileHandling.getLayoutY() + tileHandling.getChildren().get(1).getLayoutY());
                 root.getChildren().add(draggableImage);
                 isCardShowing = true;
                 //if you have tile in hand and draw, the draggability of tile in hand is gone
@@ -693,8 +695,12 @@ public class Game extends Application {
         emptyTileInHand.setArcHeight(3);
         emptyTileInHand.setFill(Color.LIGHTGRAY);
 
-        tileHandling.getChildren().addAll(turnOf, deckHeading, emptyFaceUpDeck, draw, tileInHandHeading, emptyTileInHand);
-        tileHandling.setLayoutY(350);
+        nameOfPlayersTurn.setLayoutX(800 -(nameOfPlayersTurn.getText().length()-7)*2);
+        nameOfPlayersTurn.setLayoutY(370);
+        root.getChildren().add(nameOfPlayersTurn);
+
+        tileHandling.getChildren().addAll(deckHeading, emptyFaceUpDeck, draw, tileInHandHeading, emptyTileInHand);
+        tileHandling.setLayoutY(400);
         tileHandling.setLayoutX(800);
         tileHandling.setSpacing(15);
         tileHandling.setAlignment(Pos.CENTER);
@@ -708,7 +714,7 @@ public class Game extends Application {
 
     private void autoDraw() {
         String tileType = deck.get(0);
-        DraggableImage draggableImage = new DraggableImage(SQUARE_SIZE, tileType, tileHandling.getLayoutX() + tileHandling.getChildren().get(2).getLayoutX(), tileHandling.getLayoutY() + tileHandling.getChildren().get(2).getLayoutY());
+        DraggableImage draggableImage = new DraggableImage(SQUARE_SIZE, tileType, tileHandling.getLayoutX() + tileHandling.getChildren().get(1).getLayoutX(), tileHandling.getLayoutY() + tileHandling.getChildren().get(1).getLayoutY());
         root.getChildren().add(draggableImage);
         isCardShowing = true;
     }
@@ -729,7 +735,7 @@ public class Game extends Application {
             if (Metro.shouldDraw(placementSequence.toString(), playerArrayList.get(indexOfPlayersTurn).getTileInHand())) {
                 //draw
                 String tileType = deck.get(0);
-                DraggableImage draggableImage = new DraggableImage(SQUARE_SIZE, tileType, tileHandling.getLayoutX() + tileHandling.getChildren().get(2).getLayoutX(), tileHandling.getLayoutY() + tileHandling.getChildren().get(2).getLayoutY());
+                DraggableImage draggableImage = new DraggableImage(SQUARE_SIZE, tileType, tileHandling.getLayoutX() + tileHandling.getChildren().get(1).getLayoutX(), tileHandling.getLayoutY() + tileHandling.getChildren().get(1).getLayoutY());
                 draggableImage.isDraggable = false;
 
                 root.getChildren().add(draggableImage);
@@ -754,7 +760,7 @@ public class Game extends Application {
         else {
             //have to draw
             String tileType = deck.get(0);
-            DraggableImage draggableImage = new DraggableImage(SQUARE_SIZE, tileType, tileHandling.getLayoutX() + tileHandling.getChildren().get(2).getLayoutX(), tileHandling.getLayoutY() + tileHandling.getChildren().get(2).getLayoutY());
+            DraggableImage draggableImage = new DraggableImage(SQUARE_SIZE, tileType, tileHandling.getLayoutX() + tileHandling.getChildren().get(1).getLayoutX(), tileHandling.getLayoutY() + tileHandling.getChildren().get(1).getLayoutY());
             draggableImage.isDraggable = false;         //human player should not be able to move this
             root.getChildren().add(draggableImage);
             //if we keep this in hand and then draw a new one and play that one
@@ -765,11 +771,11 @@ public class Game extends Application {
                 playerArrayList.get(indexOfPlayersTurn).updateTileHolding(tileType);
                 tileInHandImages.put(indexOfPlayersTurn, draggableImage);
                 //position this one in the tile in hand place
-                draggableImage.setLayoutX(tileHandling.getLayoutX() + tileHandling.getChildren().get(5).getLayoutX());
-                draggableImage.setLayoutY(tileHandling.getLayoutY() + tileHandling.getChildren().get(5).getLayoutY());
+                draggableImage.setLayoutX(tileHandling.getLayoutX() + tileHandling.getChildren().get(4).getLayoutX());
+                draggableImage.setLayoutY(tileHandling.getLayoutY() + tileHandling.getChildren().get(4).getLayoutY());
                 //draw another one and play
                 String tileType1 = deck.get(0);
-                DraggableImage draggableImage1 = new DraggableImage(SQUARE_SIZE, tileType1, tileHandling.getLayoutX() + tileHandling.getChildren().get(2).getLayoutX(), tileHandling.getLayoutY() + tileHandling.getChildren().get(2).getLayoutY());
+                DraggableImage draggableImage1 = new DraggableImage(SQUARE_SIZE, tileType1, tileHandling.getLayoutX() + tileHandling.getChildren().get(1).getLayoutX(), tileHandling.getLayoutY() + tileHandling.getChildren().get(1).getLayoutY());
                 draggableImage1.isDraggable = false;
                 root.getChildren().add(draggableImage1);
                 String piecePlacement = Metro.generateMove(placementSequence.toString(), tileType1, numberOfPlayers);
@@ -819,6 +825,7 @@ public class Game extends Application {
         highlighted = null;
         emptyBoardSquares = new ArrayList<>();
         indexOfPlayersTurn = 0;
+        nameOfPlayersTurn = new Text();
 
         makeControls();
         root.getChildren().add(controls);
@@ -846,7 +853,7 @@ public class Game extends Application {
         }
     }
 
-
+/**
     private void updateComputerDifficult(int difficultyValue) {
         Random random=new Random();
         //所有 score 对应的  placement sequences
@@ -875,11 +882,8 @@ public class Game extends Application {
             String placements = allPlacementSequences.get(random.nextInt(difficultyValue));
             Metro.sortedOccurrence(placements);
         }
-
-
-
      }
-
+**/
 
     //程序启动
     @Override
