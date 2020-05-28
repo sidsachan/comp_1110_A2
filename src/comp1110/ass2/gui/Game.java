@@ -283,10 +283,14 @@ public class Game extends Application {
     private void makeControls() {
         Label l1 = new Label("Difficulty");
         Slider slider = new Slider();
-        slider.setMin(0);
-        slider.setMax(100);
-        slider.setValue(40);
-        updateComputerDifficult((int) slider.getValue());
+        slider.setMin(1);
+        slider.setMax(5);
+        slider.setValue(3);
+        slider.setMajorTickUnit(1);
+        slider.setMinorTickCount(0);
+        slider.setSnapToTicks(true);
+        slider.setShowTickMarks(true);
+        slider.setShowTickLabels(true);
         Button st = new Button("START");
         Button rs = new Button("RESTART");
 
@@ -294,7 +298,7 @@ public class Game extends Application {
             Alert start = new Alert(Alert.AlertType.INFORMATION);
             start.setTitle("Game Start");
             start.setHeaderText(null);
-            start.setContentText("Degree of Difficulty： "+(int)slider.getValue());
+            start.setContentText("Degree of Difficulty： " + slider.getValue());
             start.showAndWait();
             if (stations.getChildren().size() == 0) {
                 showEmptyBoard();
@@ -746,19 +750,6 @@ public class Game extends Application {
         updateTileHandling();
     }
 
-
-    /**
-     * adding a delay method
-     */
-    private void delayForMillis(long time) {
-
-        //adding some time delay
-        try {
-            Thread.sleep(time);
-        } catch (InterruptedException ex) {
-            Thread.currentThread().interrupt();
-        }
-    }
 
     /**
      * during restart, clean up the nodes
