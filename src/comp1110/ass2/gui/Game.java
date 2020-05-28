@@ -4,7 +4,10 @@ import comp1110.ass2.Board;
 import comp1110.ass2.Metro;
 import comp1110.ass2.Player;
 import comp1110.ass2.Tile;
+import javafx.animation.KeyFrame;
 import javafx.animation.PathTransition;
+import javafx.animation.PauseTransition;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.concurrent.Task;
 import javafx.geometry.Insets;
@@ -47,7 +50,7 @@ public class Game extends Application {
     private final Group stations = new Group();
     private final GridPane nameAndScore = new GridPane();
     private final VBox tileHandling = new VBox();
-    private Text nameOfPlayersTurn =new Text();
+    private Text nameOfPlayersTurn = new Text();
 
     //存放 computer 的 发牌记录
 //    private final HashMap<Integer>
@@ -105,8 +108,8 @@ public class Game extends Application {
                         highlighted.setFill(Color.LIGHTGRAY);
                     }
 
-                    int row = (int)closest.getLayoutY()/SQUARE_SIZE;
-                    int column = (int)closest.getLayoutX()/SQUARE_SIZE;
+                    int row = (int) closest.getLayoutY() / SQUARE_SIZE;
+                    int column = (int) closest.getLayoutX() / SQUARE_SIZE;
                     String possiblePlacement = placementSequence + tileType + row + column;
                     double closestDistance = distanceToRectangle(closest, this.getLayoutX(), this.getLayoutY());
 
@@ -126,8 +129,8 @@ public class Game extends Application {
             this.setOnMouseReleased(event -> {
                 if (emptyBoardSquares.size() > 0 && isDraggable) {
                     Rectangle closest = findClosestRectangle(this.getLayoutX(), this.getLayoutY());
-                    int row = (int)closest.getLayoutY()/SQUARE_SIZE;
-                    int column = (int)closest.getLayoutX()/SQUARE_SIZE;
+                    int row = (int) closest.getLayoutY() / SQUARE_SIZE;
+                    int column = (int) closest.getLayoutX() / SQUARE_SIZE;
                     String possiblePlacement = placementSequence + tileType + row + column;
                     double closestDistance = distanceToRectangle(closest, this.getLayoutX(), this.getLayoutY());
 
@@ -169,8 +172,7 @@ public class Game extends Application {
                         if (this == tileInHandImages.get(indexOfPlayersTurn)) {
                             playerArrayList.get(indexOfPlayersTurn).updateTileHolding("");
                             tileInHandImages.put(indexOfPlayersTurn, null);
-                        }
-                        else {
+                        } else {
                             deck.remove(0);
                         }
 
@@ -231,7 +233,13 @@ public class Game extends Application {
             travel.setPath(line);
             travel.setDuration(new Duration(1500));
             travel.setCycleCount(1);
-            travel.play();
+            //puase transition
+            PauseTransition delay = new PauseTransition(Duration.millis(1000));
+            Timeline playtime = new Timeline(
+                    new KeyFrame(Duration.seconds(0), event -> delay.play()),
+                    new KeyFrame(Duration.seconds(1), event -> travel.play())
+            );
+            playtime.play();
 
             //remove the rectangle from the empty board squares array list
             emptyBoardSquares.remove(r);
@@ -302,8 +310,7 @@ public class Game extends Application {
                 //洗牌
                 deck = Metro.getFreshDeck();
                 initializeTileHandling();
-            }
-            else if (emptyBoardSquares.isEmpty()){
+            } else if (emptyBoardSquares.isEmpty()) {
                 //pressed after completing the game
                 clearAll();
                 showEmptyBoard();
@@ -311,8 +318,7 @@ public class Game extends Application {
                 initiateScoreBoard();
                 deck = Metro.getFreshDeck();
                 initializeTileHandling();
-            }
-            else{
+            } else {
                 //when pressed in middle of the game
                 //show them an alert or option to confirm if they really want to restart
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -323,8 +329,8 @@ public class Game extends Application {
                 alert.getButtonTypes().setAll(okButton, noButton);
                 Optional<ButtonType> type = alert.showAndWait();
 
-                if (type.isPresent()){
-                    System.out.println("result is recorded "+ type.get());
+                if (type.isPresent()) {
+                    System.out.println("result is recorded " + type.get());
                     if (type.get().getText() == "Yes") {
                         //if they confirm, then restart
                         System.out.println("reaching restart");
@@ -368,8 +374,8 @@ public class Game extends Application {
                 r.setArcHeight(3);
                 r.setFill(Color.LIGHTGRAY);
                 emptyBoardSquares.add(r);
-                r.setLayoutX(i*SQUARE_SIZE);
-                r.setLayoutY(j*SQUARE_SIZE);
+                r.setLayoutX(i * SQUARE_SIZE);
+                r.setLayoutY(j * SQUARE_SIZE);
                 emptyBoard.getChildren().add(r);
             }
         }
@@ -388,7 +394,7 @@ public class Game extends Application {
         if (emptyBoardSquares.size() > 0) {
             nameOfPlayersTurn.setText(playerArrayList.get(indexOfPlayersTurn).getName() + "'s turn");
             nameOfPlayersTurn.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 20));
-            nameOfPlayersTurn.setLayoutX(800 -(nameOfPlayersTurn.getText().length()-7)*2);
+            nameOfPlayersTurn.setLayoutX(800 - (nameOfPlayersTurn.getText().length() - 7) * 2);
 
             int previousPlayer = indexOfPlayersTurn - 1;
 
@@ -400,33 +406,60 @@ public class Game extends Application {
                 root.getChildren().remove(tileInHandImages.get(previousPlayer));
             }
 
+            //if human player has to play
             if (indexOfPlayersTurn < numberOfHumanPlayers) {
-                if (playerArrayList.get(indexOfPlayersTurn).isHolding()) {
-                    root.getChildren().add(tileInHandImages.get(indexOfPlayersTurn));
-                    tileInHandImages.get(indexOfPlayersTurn).isDraggable = true;
+                if (indexOfPlayersTurn == 0 && numberOfComputerPlayers != 0) {
+                    //wait for some time, for last move transition to finish, do the same thing as done for others
+                    Task<Void> sleeper = new Task<>() {
+                        @Override
+                        protected Void call() {
+                            try {
+                                Thread.sleep(2500);
+                            } catch (InterruptedException ignored) {
+                            }
+                            return null;
+                        }
+                    };
+                    sleeper.setOnSucceeded(event -> {
+                        if (playerArrayList.get(indexOfPlayersTurn).isHolding()) {
+                            root.getChildren().add(tileInHandImages.get(indexOfPlayersTurn));
+                            tileInHandImages.get(indexOfPlayersTurn).isDraggable = true;
+                        } else {
+                            autoDraw();
+                        }
+                    });
+                    new Thread(sleeper).start();
+
                 } else {
-                    autoDraw();
+                    if (playerArrayList.get(indexOfPlayersTurn).isHolding()) {
+                        root.getChildren().add(tileInHandImages.get(indexOfPlayersTurn));
+                        tileInHandImages.get(indexOfPlayersTurn).isDraggable = true;
+                    } else {
+                        autoDraw();
+                    }
                 }
             }
             //if this player is a computer, make a move
             else {
-                Task<Void> sleeper = new Task<>() {
-                    @Override
-                    protected Void call() {
-                        try {
-                            Thread.sleep(2000);
-                        } catch (InterruptedException ignored) {
+                if (indexOfPlayersTurn == numberOfHumanPlayers) {
+                    makeComputerMove();
+                } else {
+                    Task<Void> sleeper = new Task<>() {
+                        @Override
+                        protected Void call() {
+                            try {
+                                Thread.sleep(2500);
+                            } catch (InterruptedException ignored) {
+                            }
+                            return null;
                         }
-                        return null;
-                    }
-                };
-                sleeper.setOnSucceeded(event -> makeComputerMove());
-                new Thread(sleeper).start();
+                    };
+                    sleeper.setOnSucceeded(event -> makeComputerMove());
+                    new Thread(sleeper).start();
+                }
             }
 
-        }
-
-        else{
+        } else {
             //the ame is finished, all tiles have been placed
             //show who won and give info, how to play again
             Alert results = new Alert(Alert.AlertType.INFORMATION);
@@ -440,15 +473,15 @@ public class Game extends Application {
                 grid.add(new Label(playerArrayList.get(i).getName()), 1, i + 1);
                 grid.add(new Label(String.valueOf(playerArrayList.get(i).getScore())), 2, i + 1);
             }
-            grid.setLayoutX((results.getWidth() - grid.getWidth())/2);
+            grid.setLayoutX((results.getWidth() - grid.getWidth()) / 2);
             results.getDialogPane().setContent(grid);
 
             ButtonType buttonTypeExit = new ButtonType("EXIT", ButtonBar.ButtonData.CANCEL_CLOSE);
             results.getDialogPane().getButtonTypes().add(buttonTypeExit);
             System.out.println("Game end reaching");
 
-            results.showAndWait().ifPresent(type ->{
-                if(type.getText()=="EXIT"){
+            results.showAndWait().ifPresent(type -> {
+                if (type.getText() == "EXIT") {
                     System.exit(0);
                 }
             });
@@ -667,19 +700,19 @@ public class Game extends Application {
         //autoDraw();
         draw.setOnAction(actionEvent -> {
             //when draw is pressed by player to draw a card, thre is no card showing and deck is not empty
-            if (deck.size() != 0 && !isCardShowing && (indexOfPlayersTurn<numberOfHumanPlayers)) {
+            if (deck.size() != 0 && !isCardShowing && (indexOfPlayersTurn < numberOfHumanPlayers)) {
                 String tileType = deck.get(0);
                 DraggableImage draggableImage =
                         new DraggableImage(SQUARE_SIZE, tileType, tileHandling.getLayoutX() + tileHandling.getChildren().get(1).getLayoutX(), tileHandling.getLayoutY() + tileHandling.getChildren().get(1).getLayoutY());
                 root.getChildren().add(draggableImage);
                 isCardShowing = true;
                 //if you have tile in hand and draw, the draggability of tile in hand is gone
-                if(playerArrayList.get(indexOfPlayersTurn).isHolding()){
+                if (playerArrayList.get(indexOfPlayersTurn).isHolding()) {
                     tileInHandImages.get(indexOfPlayersTurn).isDraggable = false;
                 }
             }
             //draw is pressed and deck is empty, it means someone has a tile in hand and have not place it
-            else if (deck.isEmpty() && !emptyBoardSquares.isEmpty()){
+            else if (deck.isEmpty() && !emptyBoardSquares.isEmpty()) {
                 //game over
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Deck Empty");
@@ -695,7 +728,7 @@ public class Game extends Application {
         emptyTileInHand.setArcHeight(3);
         emptyTileInHand.setFill(Color.LIGHTGRAY);
 
-        nameOfPlayersTurn.setLayoutX(800 -(nameOfPlayersTurn.getText().length()-7)*2);
+        nameOfPlayersTurn.setLayoutX(800 - (nameOfPlayersTurn.getText().length() - 7) * 2);
         nameOfPlayersTurn.setLayoutY(370);
         root.getChildren().add(nameOfPlayersTurn);
 
@@ -853,37 +886,37 @@ public class Game extends Application {
         }
     }
 
-/**
-    private void updateComputerDifficult(int difficultyValue) {
-        Random random=new Random();
-        //所有 score 对应的  placement sequences
-         TreeMap<Integer, String> allPlacementSequences = Metro.getAllPlacementSequences();
-         if(allPlacementSequences.size()==0){
-             return;
-         }
-        if(difficultyValue>=0&&difficultyValue<=20){
-            String placements = allPlacementSequences.get(random.nextInt(difficultyValue));
-
-            Metro.sortedOccurrence(placements);
-        }
-        else if(difficultyValue>20&&difficultyValue<=40){
-            String placements = allPlacementSequences.get(random.nextInt(difficultyValue));
-            Metro.sortedOccurrence(placements);
-        }
-        else if(difficultyValue>40&&difficultyValue<60){
-            String placements = allPlacementSequences.get(random.nextInt(difficultyValue));
-            Metro.sortedOccurrence(placements);
-        }
-        else if(difficultyValue>60&&difficultyValue<80){
-            String placements = allPlacementSequences.get(random.nextInt(difficultyValue));
-            Metro.sortedOccurrence(placements);
-        }
-        else {
-            String placements = allPlacementSequences.get(random.nextInt(difficultyValue));
-            Metro.sortedOccurrence(placements);
-        }
-     }
-**/
+    /**
+     * private void updateComputerDifficult(int difficultyValue) {
+     * Random random=new Random();
+     * //所有 score 对应的  placement sequences
+     * TreeMap<Integer, String> allPlacementSequences = Metro.getAllPlacementSequences();
+     * if(allPlacementSequences.size()==0){
+     * return;
+     * }
+     * if(difficultyValue>=0&&difficultyValue<=20){
+     * String placements = allPlacementSequences.get(random.nextInt(difficultyValue));
+     * <p>
+     * Metro.sortedOccurrence(placements);
+     * }
+     * else if(difficultyValue>20&&difficultyValue<=40){
+     * String placements = allPlacementSequences.get(random.nextInt(difficultyValue));
+     * Metro.sortedOccurrence(placements);
+     * }
+     * else if(difficultyValue>40&&difficultyValue<60){
+     * String placements = allPlacementSequences.get(random.nextInt(difficultyValue));
+     * Metro.sortedOccurrence(placements);
+     * }
+     * else if(difficultyValue>60&&difficultyValue<80){
+     * String placements = allPlacementSequences.get(random.nextInt(difficultyValue));
+     * Metro.sortedOccurrence(placements);
+     * }
+     * else {
+     * String placements = allPlacementSequences.get(random.nextInt(difficultyValue));
+     * Metro.sortedOccurrence(placements);
+     * }
+     * }
+     **/
 
     //程序启动
     @Override
