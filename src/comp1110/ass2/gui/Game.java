@@ -390,24 +390,19 @@ public class Game extends Application {
      */
 
     private void updateTileHandling() {
-
-        if (emptyBoardSquares.size() > 0) {
-            nameOfPlayersTurn.setText(playerArrayList.get(indexOfPlayersTurn).getName() + "'s turn");
-            nameOfPlayersTurn.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 20));
-            nameOfPlayersTurn.setLayoutX(800 - (nameOfPlayersTurn.getText().length() - 7) * 2);
-
+        if (!emptyBoardSquares.isEmpty() && !deck.isEmpty()) {
+            //removing the tile in hind of the previous player
             int previousPlayer = indexOfPlayersTurn - 1;
-
             if (indexOfPlayersTurn == 0) {
                 previousPlayer = numberOfPlayers - 1;
             }
-
             if (playerArrayList.get(previousPlayer).isHolding()) {
                 root.getChildren().remove(tileInHandImages.get(previousPlayer));
             }
 
             //if human player has to play
             if (indexOfPlayersTurn < numberOfHumanPlayers) {
+
                 if (indexOfPlayersTurn == 0 && numberOfComputerPlayers != 0) {
                     //wait for some time, for last move transition to finish, do the same thing as done for others
                     Task<Void> sleeper = new Task<>() {
@@ -421,6 +416,11 @@ public class Game extends Application {
                         }
                     };
                     sleeper.setOnSucceeded(event -> {
+                        //update name info
+                        nameOfPlayersTurn.setText(playerArrayList.get(indexOfPlayersTurn).getName() + "'s turn");
+                        nameOfPlayersTurn.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 20));
+                        nameOfPlayersTurn.setLayoutX(800 - (nameOfPlayersTurn.getText().length() - 7) * 2);
+                        //if holding a tile, show it on tile in hand position
                         if (playerArrayList.get(indexOfPlayersTurn).isHolding()) {
                             root.getChildren().add(tileInHandImages.get(indexOfPlayersTurn));
                             tileInHandImages.get(indexOfPlayersTurn).isDraggable = true;
@@ -431,6 +431,10 @@ public class Game extends Application {
                     new Thread(sleeper).start();
 
                 } else {
+                    nameOfPlayersTurn.setText(playerArrayList.get(indexOfPlayersTurn).getName() + "'s turn");
+                    nameOfPlayersTurn.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 20));
+                    nameOfPlayersTurn.setLayoutX(800 - (nameOfPlayersTurn.getText().length() - 7) * 2);
+
                     if (playerArrayList.get(indexOfPlayersTurn).isHolding()) {
                         root.getChildren().add(tileInHandImages.get(indexOfPlayersTurn));
                         tileInHandImages.get(indexOfPlayersTurn).isDraggable = true;
@@ -442,6 +446,10 @@ public class Game extends Application {
             //if this player is a computer, make a move
             else {
                 if (indexOfPlayersTurn == numberOfHumanPlayers) {
+                    //update name info
+                    nameOfPlayersTurn.setText(playerArrayList.get(indexOfPlayersTurn).getName() + "'s turn");
+                    nameOfPlayersTurn.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 20));
+                    nameOfPlayersTurn.setLayoutX(800 - (nameOfPlayersTurn.getText().length() - 7) * 2);
                     makeComputerMove();
                 } else {
                     Task<Void> sleeper = new Task<>() {
@@ -454,21 +462,46 @@ public class Game extends Application {
                             return null;
                         }
                     };
-                    sleeper.setOnSucceeded(event -> makeComputerMove());
+                    sleeper.setOnSucceeded(event -> {
+                        //update name info
+                        nameOfPlayersTurn.setText(playerArrayList.get(indexOfPlayersTurn).getName() + "'s turn");
+                        nameOfPlayersTurn.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 20));
+                        nameOfPlayersTurn.setLayoutX(800 - (nameOfPlayersTurn.getText().length() - 7) * 2);
+
+                        makeComputerMove();
+                    });
                     new Thread(sleeper).start();
                 }
             }
-
-        } else {
-            //the ame is finished, all tiles have been placed
-            //show who won and give info, how to play again
+        }
+        //if someone has a tile in hand and deck is finished, we have to play is somehow
+        //as the game runs now, this will only be human players turn
+        else if (deck.isEmpty() && !emptyBoardSquares.isEmpty()) {
+            if (playerArrayList.get(indexOfPlayersTurn).isHolding()) {
+                //update name info
+                nameOfPlayersTurn.setText(playerArrayList.get(indexOfPlayersTurn).getName() + "'s turn");
+                nameOfPlayersTurn.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 20));
+                nameOfPlayersTurn.setLayoutX(800 - (nameOfPlayersTurn.getText().length() - 7) * 2);
+                root.getChildren().add(tileInHandImages.get(indexOfPlayersTurn));
+                tileInHandImages.get(indexOfPlayersTurn).isDraggable = true;
+            }
+            else {
+                indexOfPlayersTurn++;
+                if(indexOfPlayersTurn==numberOfPlayers)
+                    indexOfPlayersTurn=0;
+                updateTileHandling();
+            }
+        }
+        //the game is finished, all tiles have been placed
+        //show who won and give info, how to play again
+        else {
             Alert results = new Alert(Alert.AlertType.INFORMATION);
             String titleTxt = "Game Over";
             results.setTitle(titleTxt);
             results.setHeaderText("Press OK -> START to play again. Scores are: ");
             results.setResizable(true);
             GridPane grid = new GridPane();
-            grid.setHgap(50);
+            grid.setHgap(70);
             for (int i = 0; i < numberOfPlayers; i++) {
                 grid.add(new Label(playerArrayList.get(i).getName()), 1, i + 1);
                 grid.add(new Label(String.valueOf(playerArrayList.get(i).getScore())), 2, i + 1);
@@ -478,13 +511,32 @@ public class Game extends Application {
 
             ButtonType buttonTypeExit = new ButtonType("EXIT", ButtonBar.ButtonData.CANCEL_CLOSE);
             results.getDialogPane().getButtonTypes().add(buttonTypeExit);
-            System.out.println("Game end reaching");
 
-            results.showAndWait().ifPresent(type -> {
-                if (type.getText() == "EXIT") {
-                    System.exit(0);
-                }
-            });
+            //wait for a bit for last computer transition move to finish
+            if (numberOfComputerPlayers != 0) {
+                Task<Void> sleeper = new Task<>() {
+                    @Override
+                    protected Void call() {
+                        try {
+                            Thread.sleep(2500);
+                        } catch (InterruptedException ignored) {
+                        }
+                        return null;
+                    }
+                };
+                sleeper.setOnSucceeded(event -> results.showAndWait().ifPresent(type -> {
+                    if (type.getText().equals("EXIT")) {
+                        System.exit(0);
+                    }
+                }));
+                new Thread(sleeper).start();
+            } else {
+                results.showAndWait().ifPresent(type -> {
+                    if (type.getText().equals("EXIT")) {
+                        System.exit(0);
+                    }
+                });
+            }
         }
     }
 
@@ -790,7 +842,7 @@ public class Game extends Application {
             }
         }
         //if computer player doesn't have a in hand card
-        else {
+        else if (deck.size() != 0) {
             //have to draw
             String tileType = deck.get(0);
             DraggableImage draggableImage = new DraggableImage(SQUARE_SIZE, tileType, tileHandling.getLayoutX() + tileHandling.getChildren().get(1).getLayoutX(), tileHandling.getLayoutY() + tileHandling.getChildren().get(1).getLayoutY());
