@@ -497,7 +497,7 @@ public class Metro {
     //获得分数
     public static int[] getScore(String placementSequence, int numberOfPlayers) {
         // FIXME Task 7: determine the current score for the game
-        System.out.println( "getScore~placementSequence: "+ placementSequence);
+        //System.out.println( "getScore~placementSequence: "+ placementSequence);
         int[] score = new int[numberOfPlayers];
 
         int stationPerPlayer = 32 / numberOfPlayers;
@@ -676,7 +676,7 @@ public class Metro {
      */
     //检查 tile 类型
     public static boolean checkTileType(String placementSequence) {
-        System.out.println("checkTileType--placementSequence: "+placementSequence);
+        //System.out.println("checkTileType--placementSequence: "+placementSequence);
         Tile[] allTiles = Tile.getStartingTiles();
         boolean result = false;
         boolean check = true;
@@ -933,8 +933,8 @@ public class Metro {
             playerArrayList.get(i).updateScore(scores[i]);
             scorePlacementSequences.put(scores[i],placementSequence);
         }
-        System.out.println("scorePlacementSequences: "+scorePlacementSequences);
-        System.out.println("AllPlacementSequences: "+Metro.getAllPlacementSequences());
+        //System.out.println("scorePlacementSequences: "+scorePlacementSequences);
+        //System.out.println("AllPlacementSequences: "+Metro.getAllPlacementSequences());
         return playerArrayList;
     }
 
