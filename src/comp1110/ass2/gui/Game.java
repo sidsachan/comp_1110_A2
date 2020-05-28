@@ -189,7 +189,6 @@ public class Game extends Application {
                         this.setLayoutX(tileHandling.getLayoutX() + tileHandling.getChildren().get(5).getLayoutX());
                         this.setLayoutY(tileHandling.getLayoutY() + tileHandling.getChildren().get(5).getLayoutY());
                     }
-
                     highlighted.setFill(Color.LIGHTGRAY);
                     highlighted = null;
                 }
@@ -292,38 +291,55 @@ public class Game extends Application {
         slider.setShowTickMarks(true);
         slider.setShowTickLabels(true);
         Button st = new Button("START");
-        Button rs = new Button("RESTART");
 
         st.setOnAction(event -> {
-            Alert start = new Alert(Alert.AlertType.INFORMATION);
-            start.setTitle("Game Start");
-            start.setHeaderText(null);
-            start.setContentText("Degree of Difficulty： " + slider.getValue());
-            start.showAndWait();
+            //pressed for first time
             if (stations.getChildren().size() == 0) {
                 showEmptyBoard();
                 getPlayerInfo();
                 initiateScoreBoard();
                 //洗牌
                 deck = Metro.getFreshDeck();
-
                 initializeTileHandling();
-            } else {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Game Start");
-                alert.setHeaderText("Game fun for you!");
-                alert.setContentText("Game  Start   Please  enter  'Let's  go'  button");
-                alert.showAndWait();
             }
+            else if (emptyBoardSquares.isEmpty()){
+                //pressed after completing the game
+                clearAll();
+                showEmptyBoard();
+                getPlayerInfo();
+                initiateScoreBoard();
+                deck = Metro.getFreshDeck();
+                initializeTileHandling();
+            }
+            else{
+                //when pressed in middle of the game
+                //show them an alert or option to confirm if they really want to restart
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Exit and Restart");
+                alert.setContentText("Do you really want to exit?");
+                ButtonType okButton = new ButtonType("Yes", ButtonBar.ButtonData.YES);
+                ButtonType noButton = new ButtonType("No", ButtonBar.ButtonData.NO);
+                alert.getButtonTypes().setAll(okButton, noButton);
+                Optional<ButtonType> type = alert.showAndWait();
 
-        });
-
-        rs.setOnAction(event -> {
-            clearAll();
+                if (type.isPresent()){
+                    System.out.println("result is recorded "+ type.get());
+                    if (type.get().getText() == "Yes") {
+                        //if they confirm, then restart
+                        System.out.println("reaching restart");
+                        clearAll();
+                        showEmptyBoard();
+                        getPlayerInfo();
+                        initiateScoreBoard();
+                        deck = Metro.getFreshDeck();
+                        initializeTileHandling();
+                    }
+                }
+            }
         });
 
         HBox bottomControls = new HBox();
-        bottomControls.getChildren().addAll(l1, slider, st, rs);
+        bottomControls.getChildren().addAll(l1, slider, st);
         bottomControls.setLayoutX(100);
         bottomControls.setLayoutY(VIEWER_HEIGHT - 50);
         bottomControls.setSpacing(30);
@@ -408,6 +424,34 @@ public class Game extends Application {
                 new Thread(sleeper).start();
             }
 
+        }
+
+        else{
+            //the ame is finished, all tiles have been placed
+            //show who won and give info, how to play again
+            Alert results = new Alert(Alert.AlertType.INFORMATION);
+            String titleTxt = "Game Over";
+            results.setTitle(titleTxt);
+            results.setHeaderText("Press OK -> START to play again. Scores are: ");
+            results.setResizable(true);
+            GridPane grid = new GridPane();
+            grid.setHgap(50);
+            for (int i = 0; i < numberOfPlayers; i++) {
+                grid.add(new Label(playerArrayList.get(i).getName()), 1, i + 1);
+                grid.add(new Label(String.valueOf(playerArrayList.get(i).getScore())), 2, i + 1);
+            }
+            grid.setLayoutX((results.getWidth() - grid.getWidth())/2);
+            results.getDialogPane().setContent(grid);
+
+            ButtonType buttonTypeExit = new ButtonType("EXIT", ButtonBar.ButtonData.CANCEL_CLOSE);
+            results.getDialogPane().getButtonTypes().add(buttonTypeExit);
+            System.out.println("Game end reaching");
+
+            results.showAndWait().ifPresent(type ->{
+                if(type.getText()=="EXIT"){
+                    System.exit(0);
+                }
+            });
         }
     }
 
@@ -620,6 +664,7 @@ public class Game extends Application {
         Button draw = new Button("Draw");
         //autoDraw();
         draw.setOnAction(actionEvent -> {
+            //when draw is pressed by player to draw a card, thre is no card showing and deck is not empty
             if (deck.size() != 0 && !isCardShowing && (indexOfPlayersTurn<numberOfHumanPlayers)) {
                 String tileType = deck.get(0);
                 DraggableImage draggableImage =
@@ -630,12 +675,14 @@ public class Game extends Application {
                 if(playerArrayList.get(indexOfPlayersTurn).isHolding()){
                     tileInHandImages.get(indexOfPlayersTurn).isDraggable = false;
                 }
-            } else {
+            }
+            //draw is pressed and deck is empty, it means someone has a tile in hand and have not place it
+            else if (deck.isEmpty() && !emptyBoardSquares.isEmpty()){
                 //game over
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Game  Over");
-                alert.setHeaderText("Game Over!");
-                alert.setContentText("Game  Over   You can play again");
+                alert.setTitle("Deck Empty");
+                alert.setHeaderText("No more Tiles to Draw!");
+                alert.setContentText("Someone has a tile in hand. Ask them to place it!!!");
                 alert.showAndWait();
             }
         });
