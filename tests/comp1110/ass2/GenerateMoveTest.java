@@ -44,9 +44,10 @@ public class GenerateMoveTest {
             String moveSet = Utilities.MISCELLANEOUS_MOVES[i];
             String boardString = moveSet.substring(0, moveSet.length() - 4);
             String piece = moveSet.substring(moveSet.length() - 4);
-            String move = Metro.generateMove(boardString, piece, i + 2);
+            int numPlayers = i + 2;
+            String move = Metro.generateMove(boardString, piece, numPlayers);
 
-            assertTrue("Invalid move \"" + move + "\" for board string " + boardString,
+            assertTrue("Metro.generateMove(\"" + boardString + "\", \"" + piece + "\", " + numPlayers + ") returned invalid move \"" + move + "\"",
                     Utilities.POSSIBLE_MOVES.get(i).contains(move));
         }
     }
@@ -62,8 +63,8 @@ public class GenerateMoveTest {
             String move = Metro.generateMove(nearCompleteBoard, piece, numPlayers);
 
             assertNotNull("Metro.generateMove(\"" + nearCompleteBoard + "\", \"" + piece + "\", " + numPlayers + ") returned null", move);
-            assertFalse("Metro.generateMove(\"" + nearCompleteBoard + "\", " + piece + ", " + numPlayers + ") returned empty string", move.isEmpty());
-            assertEquals("Expected placement in (" + expected.charAt(0) + ", " + expected.charAt(1) +
+            assertFalse("Metro.generateMove(\"" + nearCompleteBoard + "\", \"" + piece + "\", " + numPlayers + ") returned empty string", move.isEmpty());
+            assertEquals("Metro.generateMove(\"" + nearCompleteBoard + "\", \"" + piece + "\", " + numPlayers + ") expected placement (" + expected.charAt(0) + ", " + expected.charAt(1) +
                     "), got (" + move.charAt(4) + ", " + move.charAt(5) + ")", piece + expected, move);
         }
     }
